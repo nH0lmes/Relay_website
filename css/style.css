@@ -1,0 +1,192 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --white: #fff;
+  --light-blue: #2cd8ff;
+  --dark-blue: #000072;
+  --black: #000;
+  --light-grey: #dadada;
+  --dark-grey: #b1b2b5;
+}
+body {
+  font-family: "Poppins", sans-serif;
+  font-size: 16 px;
+  line-height: 1.5;
+  background: #fff;
+}
+
+a {
+  text-decoration: none;
+  color: var(--white);
+  font-size: 20px;
+}
+
+ul {
+  list-style: none;
+}
+
+img {
+  max-width: 100%;
+}
+/*Navbar*/
+.navbar {
+  background: var(--dark-blue);
+  padding: 20px;
+}
+
+.navbar .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar .main-menu ul {
+  display: flex;
+}
+
+.navbar ul li a {
+  padding: 10px 20px;
+  display: block;
+  font-weight: 600;
+  transition: 0.5s;
+}
+.navbar ul li a:hover {
+  color: var(--light-blue);
+}
+.navbar ul li a i {
+  margin-right: 10px;
+}
+.navbar ul li:last-child a {
+  margin-left: 10px;
+}
+.navbar .btn:hover {
+  opacity: 0.7;
+  color: var(--white);
+}
+/* Hero */
+.hero {
+  margin-bottom: 50 px;
+}
+.hero .container {
+  background: url(../images/relay-takeover-new.jpg) no-repeat;
+  background-size: contain;
+  background-position: center top;
+  height: 554px;
+  border: 1px solid var(--black);
+}
+
+.hero .hero-content {
+  width: 70%;
+}
+
+.hero .hero-text {
+  width: 70%;
+  margin-bottom: 20px;
+}
+/* About Us section*/
+.box {
+  flex: 1;
+  padding: 20px;
+  background-color: var(--white);
+  border: 1px solid var(--black);
+  text-align: center;
+  width: 70%;
+}
+
+.box1 {
+  background-color: var(--dark-blue);
+}
+
+.box2 {
+  background: url(../images/starting-block.jpg) no-repeat;
+  background-size: contain;
+  background-position: center top;
+  height: 394px;
+}
+/*Utility Classes*/
+
+.container {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.container_double {
+  max-width: 1500px;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.containersm {
+  max-width: 750px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+/* Buttons */
+.btn {
+  display: inline-block;
+  padding: 13px 20px;
+  background: var(--light-blue);
+  font-weight: 600;
+  text-decoration: none;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.5s;
+}
+
+.btn-grey {
+  background: var(--dark-grey);
+  color: black;
+}
+
+.btn:hover {
+  opacity: 0.8;
+  color: var(--light-grey);
+}
+
+/*Text Classes*/
+.text-xxl {
+  font-size: 3rem;
+  line-height: 1.2;
+  font-weight: 600;
+  margin: 40px 0 20px;
+}
+
+.text-xl {
+  font-size: 2.2rem;
+  line-height: 1.4;
+  font-weight: normal;
+  margin: 40px 0 20px;
+}
+
+.text-lg {
+  font-size: 1.8rem;
+  line-height: 1.4;
+  font-weight: normal;
+  margin: 30px 0 20px;
+}
+
+.text-md {
+  font-size: 1.2rem;
+  line-height: 1.4;
+  font-weight: normal;
+  margin: 20px 0 10px;
+}
+.text-sm {
+  font-size: 0.9;
+  line-height: 1.4;
+  font-weight: normal;
+  margin: 10px 0 5px;
+}
+
+.text-center {
+  text-align: center;
+}
