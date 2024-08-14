@@ -87,26 +87,41 @@ img {
   width: 70%;
   margin-bottom: 20px;
 }
-/* About Us section*/
+
 .box {
   flex: 1;
   padding: 20px;
   background-color: var(--white);
-  border: 1px solid var(--black);
   text-align: center;
   width: 70%;
 }
 
-.box1 {
-  background-color: var(--dark-blue);
+/* About Us section*/
+.about_box2 {
+  box-sizing: border-box;
+}
+.about_box2 img{
+  width : 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  border-radius: 10px;
 }
 
-.box2 {
-  background: url(../images/starting-block.jpg) no-repeat;
-  background-size: contain;
-  background-position: center top;
-  height: 394px;
+/*Input Section*/
+.input_box1{
+  box-sizing: border-box;
 }
+
+.input_box1 img{
+  width : 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+
 /*Utility Classes*/
 
 .container {
