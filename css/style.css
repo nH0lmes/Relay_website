@@ -17,6 +17,7 @@ body {
   font-size: 16 px;
   line-height: 1.5;
   background: #fff;
+
 }
 
 a {
@@ -69,25 +70,49 @@ img {
 }
 /* Hero */
 .hero {
-  margin-bottom: 50 px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  width: 1000px;
+  margin: 0 auto;
+  max-width: 1000px;
+  align-items: center;
+  background-color: #000072;
+
 }
 .hero .container {
-  background: url(../images/relay-takeover-new.jpg) no-repeat;
-  background-size: contain;
-  background-position: center top;
-  height: 554px;
-  border: 1px solid var(--black);
+  width: 100%;
+  position: relative;
+}
+
+.hero .container img{
+  width : 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  padding: 0;
+  margin: 0;
+  border: none;
 }
 
 .hero .hero-content {
-  width: 70%;
-}
+  position: absolute;
+  top: 0%;
+  left: 0%;
+  background-color: var(--light-blue);
+  padding: 20px;
+  max-width: 80%;
+  text-align: center;
+  z-index: 2;
+  border-radius: 0 0 10px 10px;
+  }
 
 .hero .hero-text {
   width: 70%;
   margin-bottom: 20px;
 }
-
+/*Applies for all sections*/
 .box {
   flex: 1;
   padding: 20px;
