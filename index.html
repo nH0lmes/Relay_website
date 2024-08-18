@@ -50,48 +50,78 @@
     <!--Hero-->
     <section class="hero">
       <div class="container">
-        <img src="../Relay_website/images/relay-takeover-new.jpg" alt="Image of a relay takeover">
+        <img
+          src="../images/relay-takeover-new.jpg"
+          alt="Image of a relay takeover"
+        />
       </div>
       <div class="hero-content">
         <h1 class="hero-heading text-xxl">Lots of text here</h1>
         <p>More text about the tool</p>
-        <div class="hero-button">    
+        <div class="hero-button">
           <a href="#" class="btn">Go</a>
         </div>
       </div>
-      
     </section>
     <section class="about_us">
       <div class="container_double">
         <div class="box about_text">
-            <h1>About the Tool</h1>
-            <p>This is lots of text which will tell the user about the tool and how to use it
-            </p>
+          <h1>About the Tool</h1>
+          <p>
+            This is lots of text which will tell the user about the tool and how
+            to use it
+          </p>
         </div>
         <div class="box about_box2">
-          <img src="../Relay_website/images/starting-block.jpg" alt="Image of Starting Block">
+          <img
+            src="../images/starting-block.jpg"
+            alt="Image of Starting Block"
+          />
         </div>
-        </div>
+      </div>
     </section>
     <section class="Input">
       <div class="container_double">
         <div class="box input_box1">
-          <img src="../Relay_website/images/Underwater_photo.jpg" alt="Image of swimmer performing underwater kick">
+          <img
+            src="../images/Underwater_photo.jpg"
+            alt="Image of swimmer performing underwater kick"
+          />
         </div>
         <div class="box input_box2">
           <h1>Build your Relay</h1>
           <h2>Insert the ASA numbers for each swimmer into the boxes below</h2>
-          <form>
+          <form action="results.html" method="get">
             <label for="Swimmer1">Swimmer 1</label>
-            <input type="text" name = "Swimmer1"><br>
+            <input
+              type="text"
+              inputmode="numeric"
+              name="Swimmer1"
+              id="Swimmer1"
+            /><br />
             <label for="Swimmer2">Swimmer 2</label>
-            <input type="text" name = "Swimmer2"><br>
+            <input
+              type="text"
+              inputmode="numeric"
+              name="Swimmer2"
+              id="Swimmer2"
+            /><br />
             <label for="Swimmer3">Swimmer 3</label>
-            <input type="text" name = "Swimmer3"><br>
+            <input
+              type="text"
+              inputmode="numeric"
+              name="Swimmer3"
+              id="Swimmer3"
+            /><br />
             <label for="Swimmer4">Swimmer 4</label>
-            <input type="text" name = "Swimmer4"><br>
+            <input
+              type="text"
+              inputmode="numeric"
+              name="Swimmer4"
+              id="Swimmer4"
+            /><br />
+            <button class="btn" type="submit">Submit</button>
           </form>
-
         </div>
       </div>
     </section>

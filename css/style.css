@@ -17,7 +17,6 @@ body {
   font-size: 16 px;
   line-height: 1.5;
   background: #fff;
-
 }
 
 a {
@@ -71,6 +70,7 @@ img {
 /* Hero */
 .hero {
   width: 95%;
+  max-width: 1500px;
   position: relative;
   display: flex;
   justify-content: center;
@@ -85,7 +85,7 @@ img {
   padding: 0;
 }
 
-.hero .container img{
+.hero .container img {
   width: 100%;
   height: auto;
   display: block;
@@ -105,7 +105,7 @@ img {
   text-align: center;
   z-index: 2;
   border-radius: 0 0 10px 0;
-  }
+}
 
 .hero .hero-text {
   width: 70%;
@@ -123,8 +123,8 @@ img {
 .about_box2 {
   box-sizing: border-box;
 }
-.about_box2 img{
-  width : 100%;
+.about_box2 img {
+  width: 100%;
   height: auto;
   display: block;
   object-fit: cover;
@@ -132,18 +132,30 @@ img {
 }
 
 /*Input Section*/
-.input_box1{
+.input_box1 {
   box-sizing: border-box;
 }
 
-.input_box1 img{
-  width : 100%;
+.input_box1 img {
+  width: 100%;
   height: auto;
   display: block;
   object-fit: cover;
   border-radius: 10px;
 }
 
+input {
+  background-color: #b1b2b5;
+  border: none;
+  border-radius: 0 6px 6px 0;
+  height: 30px;
+}
+
+label {
+  background-color: #b1b2b5;
+  height: 30px;
+  border-radius: 6px 0 0 6px;
+}
 
 /*Utility Classes*/
 
