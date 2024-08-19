@@ -90,43 +90,54 @@
         </div>
         <div class="box input_box2">
           <h1>Build your Relay</h1>
-          <h2>Insert the ASA numbers for each swimmer into the boxes below</h2>
-          <form action="results.html" method="get">
-            <label for="Swimmer1">Swimmer 1</label>
-            <input
+          <p>Insert the ASA numbers for each swimmer into the boxes below</p>
+          <form action="/submit" method="post" class="form-container" id="swimmer-form">
+            <div class="swimmer-input">
+              <label for="Swimmer1">Swimmer 1</label>
+              <div class="divider"></div>
+              <input
               type="text"
               inputmode="numeric"
               name="Swimmer1"
-              id="Swimmer1"
-            /><br />
-            <label for="Swimmer2">Swimmer 2</label>
-            <input
+              id="Swimmer1"/>
+            </div>
+
+            <div class="swimmer-input">
+              <label for="Swimmer2">Swimmer 2</label>
+              <div class="divider"></div>
+              <input
               type="text"
               inputmode="numeric"
               name="Swimmer2"
-              id="Swimmer2"
-            /><br />
-            <label for="Swimmer3">Swimmer 3</label>
-            <input
+              id="Swimmer2"/>
+            </div>
+
+            <div class="swimmer-input">
+              <label for="Swimmer3">Swimmer 3</label>
+              <div class="divider"></div>
+              <input
               type="text"
               inputmode="numeric"
               name="Swimmer3"
-              id="Swimmer3"
-            /><br />
-            <label for="Swimmer4">Swimmer 4</label>
-            <input
+              id="Swimmer3"/>
+            </div>
+
+            <div class="swimmer-input">
+              <label for="Swimmer4">Swimmer 4</label>
+              <div class="divider"></div>
+              <input
               type="text"
               inputmode="numeric"
               name="Swimmer4"
-              id="Swimmer4"
-            /><br />
+              id="Swimmer4"/>
+            </div>
+            <div id="delete-buttons-container"></div>
+            <button type ="button" class="btn btn-grey" id="addSwimmerButton">Add +</button>
             <button class="btn" type="submit">Submit</button>
           </form>
         </div>
       </div>
     </section>
-    <script>
-      src = "js/main.js";
-    </script>
+    <script src = "js/main.js"></script>
   </body>
 </html>
