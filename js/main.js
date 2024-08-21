@@ -1,3 +1,4 @@
+/*For adding new input rows to the submit form*/
 let nameCount = 4;
 
 document
@@ -70,4 +71,52 @@ function reindexSwimmerBoxes() {
     const newIndex = index + 1;
     container.dataset.index = newIndex;
   });
+}
+
+/*Submit button function on the input form*/
+document
+  .getElementById("swimmer-form")
+  .addEventListener("submit", function (event) {
+    event.preventDefault();
+    let swimmer_list = [];
+    for (let i = 1; i <= nameCount; i++) {
+      const swimmer = document.getElementById(`Swimmer${i}`).value;
+      swimmer_list.push(swimmer);
+    }
+    let tbl_wrapper;
+
+    tbl_create(swimmer_list);
+  });
+function tbl_create(swimmer_list) {
+  if (typeof tbl_wrapper !== "undefined") {
+    tbl_wrapper.remove();
+  }
+  const tbl_section = document.getElementById("results");
+  const tbl = document.createElement("table");
+  tbl.className = "results-table";
+
+  /*Make the Header*/
+  const tbl_header = document.createElement("thead");
+  ["Name", "Stroke", "Time"].forEach((text) => {
+    const head = document.createElement("th");
+    head.textContent = text;
+    tbl_header.appendChild(head);
+  });
+  tbl.appendChild(tbl_header);
+
+  /*Add table contents*/
+  swimmer_list.forEach((time) => {
+    const tr = document.createElement("tr");
+    ["John", "Butterfly", time].forEach((text) => {
+      const td = document.createElement("td");
+      td.textContent = text;
+      tr.appendChild(td);
+    });
+    tbl.appendChild(tr);
+  });
+  tbl_wrapper = document.createElement("div");
+  tbl_wrapper.className = "table-container";
+  tbl_wrapper.appendChild(tbl);
+  tbl_section.appendChild(tbl_wrapper);
+  tbl_wrapper.scrollIntoView({ behavior: "smooth" });
 }
