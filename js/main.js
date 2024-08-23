@@ -1,5 +1,6 @@
 /*For adding new input rows to the submit form*/
 let nameCount = 4;
+let tbl_wrapper;
 
 document
   .getElementById("addSwimmerButton")
@@ -48,9 +49,7 @@ document
 
 function reindexSwimmerBoxes() {
   const swimmerBoxes = document.querySelectorAll(".swimmer-input");
-  const deleteButtonsContainers = document.querySelectorAll(
-    "delete-button-container"
-  );
+  const deleteButtonsContainers = document.querySelectorAll(".btn-delete");
 
   nameCount = swimmerBoxes.length;
 
@@ -76,17 +75,38 @@ function reindexSwimmerBoxes() {
 /*Submit button function on the input form*/
 document
   .getElementById("swimmer-form")
-  .addEventListener("submit", function (event) {
+  .addEventListener("submit", async function (event) {
     event.preventDefault();
     let swimmer_list = [];
     for (let i = 1; i <= nameCount; i++) {
       const swimmer = document.getElementById(`Swimmer${i}`).value;
       swimmer_list.push(swimmer);
     }
-    let tbl_wrapper;
-
-    tbl_create(swimmer_list);
+    let swimmer_list2 = await runPython(swimmer_list);
+    if (swimmer_list2) {
+      tbl_create(swimmer_list2); // Proceed only if there's no error
+    } else {
+      console.error("Failed to create the table due to an error.");
+    }
   });
+
+async function runPython(swimmer_array) {
+  const response = await fetch("http://127.0.0.1:8000/run-function/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ array: swimmer_array }),
+  });
+
+  if (response.ok) {
+    const data = await response.json();
+    return data.result;
+  } else {
+    console.error("Error:", response.statusText);
+    return null;
+  }
+}
 function tbl_create(swimmer_list) {
   if (typeof tbl_wrapper !== "undefined") {
     tbl_wrapper.remove();
@@ -97,7 +117,7 @@ function tbl_create(swimmer_list) {
 
   /*Make the Header*/
   const tbl_header = document.createElement("thead");
-  ["Name", "Stroke", "Time"].forEach((text) => {
+  ["Stroke", "Name", "Time"].forEach((text) => {
     const head = document.createElement("th");
     head.textContent = text;
     tbl_header.appendChild(head);
@@ -105,9 +125,9 @@ function tbl_create(swimmer_list) {
   tbl.appendChild(tbl_header);
 
   /*Add table contents*/
-  swimmer_list.forEach((time) => {
+  swimmer_list.forEach((list) => {
     const tr = document.createElement("tr");
-    ["John", "Butterfly", time].forEach((text) => {
+    list.forEach((text) => {
       const td = document.createElement("td");
       td.textContent = text;
       tr.appendChild(td);
