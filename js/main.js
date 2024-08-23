@@ -125,15 +125,26 @@ function tbl_create(swimmer_list) {
   tbl.appendChild(tbl_header);
 
   /*Add table contents*/
-  swimmer_list.forEach((list) => {
+  for (let n = 0; n < swimmer_list.length - 1; n++) {
     const tr = document.createElement("tr");
-    list.forEach((text) => {
+    swimmer_list[n].forEach((text) => {
       const td = document.createElement("td");
       td.textContent = text;
       tr.appendChild(td);
     });
     tbl.appendChild(tr);
-  });
+  }
+  const tr = document.createElement("tr");
+  last_row = swimmer_list[swimmer_list.length - 1];
+  const td1 = document.createElement("td");
+  td1.colSpan = "2";
+  td1.textContent = last_row[0];
+  const td2 = document.createElement("td");
+  td2.textContent = last_row[1];
+  tr.appendChild(td1);
+  tr.appendChild(td2);
+  tbl.appendChild(tr);
+
   tbl_wrapper = document.createElement("div");
   tbl_wrapper.className = "table-container";
   tbl_wrapper.appendChild(tbl);

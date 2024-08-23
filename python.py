@@ -117,6 +117,7 @@ def your_function(input_array):
         column_name = strokes[column]
         output_array.append( [column_name,row_name,original_value])
     sorted_array = sorted(output_array,key = lambda x:x[0])
+    sorted_array.append(["Total Time:",reverse_conversion(total)])
 
     return(sorted_array)
 
