@@ -220,10 +220,9 @@ input[type="text"]:focus {
 .new-one {
   position: relative;
 }
-.buttons-container {
-  width: 60%;
-  display: inline-flex;
-  justify-content: flex-end;
+
+#addSwimmerButton {
+  align-self: flex-end;
 }
 .buttons-container > * {
   margin-left: 5px;

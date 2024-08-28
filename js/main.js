@@ -77,26 +77,35 @@ document
   .getElementById("swimmer-form")
   .addEventListener("submit", async function (event) {
     event.preventDefault();
-    let swimmer_list = [];
-    for (let i = 1; i <= nameCount; i++) {
-      const swimmer = document.getElementById(`Swimmer${i}`).value;
-      swimmer_list.push(swimmer);
-    }
-    let swimmer_list2 = await runPython(swimmer_list);
-    if (swimmer_list2) {
-      tbl_create(swimmer_list2); // Proceed only if there's no error
+    let course = document.querySelector('input[name="course-type"]:checked');
+    if (course != null) {
+      let swimmer_list = [];
+      for (let i = 1; i <= nameCount; i++) {
+        const swimmer = document.getElementById(`Swimmer${i}`).value;
+        swimmer_list.push(swimmer);
+      }
+      let swimmer_list2 = await runPython(swimmer_list, course.value);
+      if (swimmer_list2) {
+        tbl_create(swimmer_list2); // Proceed only if there's no error
+      } else {
+        console.error("Failed to create the table due to an error.");
+      }
     } else {
-      console.error("Failed to create the table due to an error.");
+      console.error("No boxes checked");
     }
   });
 
-async function runPython(swimmer_array) {
+async function runPython(swimmer_array, course) {
+  const sentData = {
+    array: swimmer_array,
+    courseType: course,
+  };
   const response = await fetch("http://127.0.0.1:8000/run-function/", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ array: swimmer_array }),
+    body: JSON.stringify(sentData),
   });
 
   if (response.ok) {
