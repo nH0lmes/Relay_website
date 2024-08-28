@@ -1,0 +1,24 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run Python Script",
+      "type": "shell",
+      "command": "python",
+      "args": ["python.py"],
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Live Server",
+      "type": "shell",
+      "command": "code",
+      "args": ["-r", "${Real Website V2}/index.html"],
+      "problemMatcher": [],
+      "dependsOn": "Run Python Script"
+    }
+  ]
+}

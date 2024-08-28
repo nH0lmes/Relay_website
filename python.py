@@ -22,19 +22,20 @@ app.add_middleware(
 class InputData(BaseModel):
     array: List[str]
     courseType: str
+    pool_length: str
 
 # Create an endpoint
 @app.post("/run-function/")
 async def run_function(data: InputData):
     try:
         print("Received data:",data.array)
-        result = your_function(data.array,data.courseType)
+        result = your_function(data.array,data.courseType,data.pool_length)
         return {"result": result}
     except Exception as e:
         print("Error in processing:", str(e))
         raise HTTPException(status_code=400, detail=str(e))
 
-def your_function(input_array,course):
+def your_function(input_array,course,pool_length):
 
     def get_times(asa_number):
         event_template  = pd.read_csv("Events-template.csv")
@@ -76,8 +77,8 @@ def your_function(input_array,course):
             row = [df.loc[df['Event'] == i, 'LC Time'].values[0] for i in events]
              
         return name,row
-    
-    medley = ['100 Butterfly','100 Backstroke','100 Breaststroke', '100 Freestyle']
+    strokes = ['Butterfly','Backstroke','Breaststroke','Freestyle']
+    medley = [(pool_length + ' ' + x) for x in strokes]
     numbers = input_array
     names= []
     matrix = []
@@ -109,7 +110,7 @@ def your_function(input_array,course):
         return f'{minutes}:{seconds:02}.{ms // 10:02}' if minutes > 0 else f'{seconds}.{ms // 10:02}'
     
     converted = [[time_conversion(ti)for ti in row] for row in matrix]
-    strokes = ['Butterfly','Backstroke','Breastroke','Freestyle']
+    
     m = Munkres()
     indexes = m.compute(converted)
     output_array =  []
@@ -128,4 +129,4 @@ def your_function(input_array,course):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=8000,log_level="info")

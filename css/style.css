@@ -224,6 +224,63 @@ input[type="text"]:focus {
 #addSwimmerButton {
   align-self: flex-end;
 }
+
+input[type="radio"] {
+  border: 0 !important;
+  clip: rect(1px, 1px, 1px, 1px);
+  height: 1px !important;
+  overflow: hidden;
+  padding: 0 !important;
+  position: absolute !important;
+  width: 1px !important;
+}
+input[type="radio"]:checked {
+  background-color: blue;
+  border: 6px solid white; /* Inner circle effect */
+  box-shadow: 0 0 0 2px blue;
+}
+.radio-label {
+  color: black;
+  font-size: 1em;
+  opacity: 70%;
+  display: inline-flex;
+  align-items: center;
+  margin-right: 20px;
+}
+.radio-label::before {
+  content: "";
+
+  display: block;
+  height: 1.25em;
+  width: 1.25em;
+  border: solid 1px #ccc;
+  border-radius: 50%;
+  margin-right: 0.5em;
+  margin-left: 20px;
+  transition: border ease-in 150ms, box-shadow ease-in 150ms;
+}
+
+input[type="radio"]:checked + label {
+  color: var(--dark-blue);
+  opacity: 100%;
+}
+input[type="radio"]:hover + label {
+  opacity: 100%;
+}
+input[type="radio"]:checked + label::before {
+  background: radial-gradient(
+    0.75em circle at center,
+    var(--dark-blue) 50%,
+    transparent 60%
+  );
+  box-shadow: 0 0 1em 0 rgba(10, 150, 255, 0.75);
+  border-color: currentColor;
+}
+input[type="radio"]:hover + label::before {
+  box-shadow: 0 0 1em 0 rgba(10, 150, 255, 0.75);
+  border-color: currentColor;
+}
+
 .buttons-container > * {
   margin-left: 5px;
 }

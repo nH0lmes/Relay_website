@@ -78,13 +78,18 @@ document
   .addEventListener("submit", async function (event) {
     event.preventDefault();
     let course = document.querySelector('input[name="course-type"]:checked');
+    let poolLength = document.querySelector("input[name=pool-length]:checked");
     if (course != null) {
       let swimmer_list = [];
       for (let i = 1; i <= nameCount; i++) {
         const swimmer = document.getElementById(`Swimmer${i}`).value;
         swimmer_list.push(swimmer);
       }
-      let swimmer_list2 = await runPython(swimmer_list, course.value);
+      let swimmer_list2 = await runPython(
+        swimmer_list,
+        course.value,
+        poolLength.value
+      );
       if (swimmer_list2) {
         tbl_create(swimmer_list2); // Proceed only if there's no error
       } else {
@@ -95,10 +100,11 @@ document
     }
   });
 
-async function runPython(swimmer_array, course) {
+async function runPython(swimmer_array, course, poolLength) {
   const sentData = {
     array: swimmer_array,
     courseType: course,
+    pool_length: poolLength,
   };
   const response = await fetch("http://127.0.0.1:8000/run-function/", {
     method: "POST",

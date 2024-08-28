@@ -147,11 +147,17 @@
             <button type="button" class="btn btn-grey" id="addSwimmerButton">
               Add +
             </button>
-            <div class="radio-wrapper" id="pool-length">
+            <div class="radio-wrapper" id="pool">
               <input type="radio" name="course-type" id="short-course" value="short">
-              <label for="short-course">Short Course</label>
+              <label class="radio-label" for="short-course">Short Course</label>
               <input type="radio" name="course-type" id="long-course" value="long">
-              <label for="long-course">Long Course</label>
+              <label class="radio-label" for="long-course">Long Course</label>
+            </div>
+            <div class="radio-wrapper" id="race-length">
+              <input type="radio" name="pool-length" id="50" value="50">
+              <label class="radio-label" for="50">4 &#215; 50m</label>
+              <input type="radio" name="pool-length" id="100" value="100">
+              <label class="radio-label" for="100">4 &#215; 100m</label>
             </div>
             <button class="btn" type="submit">Submit</button>
           </form>
