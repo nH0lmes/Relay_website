@@ -25,7 +25,7 @@
       <div class="container">
         <div class="logo">
           <a href="index.html">
-            <img src="images/icon.jpg" alt="logo" width="30px" height="30px" />
+            <img src="images/icon.jpg" alt="logo" width="50px" height="50px" />
           </a>
         </div>
 
@@ -35,10 +35,10 @@
               <a href="index.html">Home</a>
             </li>
             <li>
-              <a href="#">About</a>
+              <a href="#about-us">About</a>
             </li>
             <li>
-              <a href="#">Calculate</a>
+              <a href="#Input">Calculate</a>
             </li>
             <li>
               <a class="btn" href="#"> <i class="fas fa-user"></i>Log In </a>
@@ -56,20 +56,23 @@
         />
       </div>
       <div class="hero-content">
-        <h1 class="hero-heading text-xxl">Lots of text here</h1>
-        <p>More text about the tool</p>
+        <h1 class="hero-heading text-xxl">Medley Master</h1>
+        <p>Rocket your team to success with our innovative medley relay building tool</p>
         <div class="hero-button">
-          <a href="#" class="btn">Go</a>
+          <a href="#Input" class="btn">Go!</a>
         </div>
       </div>
     </section>
-    <section class="about_us">
+    <section class="about_us" id="about-us">
       <div class="container_double">
         <div class="box about_text">
           <h1>About the Tool</h1>
+          <div class="text_seperator"></div>
           <p>
-            This is lots of text which will tell the user about the tool and how
-            to use it
+            Welcome to the Medley Master relay optimiser, a unique tool designed to help your swim team find the fastest medley relay.
+            Whether you are preparing for a competition, or just interested in what your fastest team would look like,
+            this website can calculate it for you. Simply enter your swimmers via your preferred method and using advanced algorithms we will
+            calculate the optimal medley relay order. Maximise your team's potential with just a few clicks! 
           </p>
         </div>
         <div class="box about_box2">
@@ -80,7 +83,7 @@
         </div>
       </div>
     </section>
-    <section class="Input">
+    <section class="Input" id="Input">
       <div class="container_double">
         <div class="box input_box1">
           <img
@@ -90,6 +93,7 @@
         </div>
         <div class="box input_box2">
           <h1>Build your Relay</h1>
+          <div class="text_seperator"></div>
           <p>Insert the ASA numbers for each swimmer into the boxes below</p>
           <form
             action="/submit"

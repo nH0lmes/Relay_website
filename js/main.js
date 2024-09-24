@@ -44,7 +44,7 @@ document
     wrapper.appendChild(deleteButton);
 
     const form = document.getElementById("swimmer-form");
-    form.insertBefore(wrapper, document.getElementById("buttons-container"));
+    form.insertBefore(wrapper, document.getElementById("addSwimmerButton"));
   });
 
 function reindexSwimmerBoxes() {
