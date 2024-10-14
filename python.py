@@ -36,12 +36,56 @@ async def run_function(data: InputData):
         raise HTTPException(status_code=400, detail=str(e))
 
 def your_function(input_array,course,pool_length):
+    n=2
+    def swim_cloud(sc_number):
+        event_template  = pd.read_csv("D:\Personal\Real Website V2\Events-template.csv")
+        url = f'https://www.swimcloud.com/swimmer/{sc_number}/'
+        page = requests.get(url)
+        soup = BeautifulSoup(page.text,'lxml')
+        table = soup.find_all('table')[1]
+        name = soup.find('span', {'class' : 'u-mr-'}).text.strip()
 
+        def extract_table(table):
+            headers = [header.text.strip() for header in table.find_all('th')[:2]]
+            df = pd.DataFrame(columns = headers)
+            rows = table.find_all('tr')[1:]
+            for row in rows:
+                cols = row.find_all('td')
+                individual_data = [data.text.strip() for data in cols[:2]]
+                df.loc[len(df)]=individual_data
+            
+            return df
+
+        mixed = extract_table(table)
+        event_replacements = {
+            ' Free': ' Freestyle',
+            ' Breast': ' Breaststroke',
+            ' Fly': ' Butterfly',
+            ' Back': ' Backstroke',
+            ' IM': ' Individual Medley'
+        }
+        for short, full in event_replacements.items():
+            mixed['Event'] = mixed['Event'].str.replace(short,full, regex=False)
+
+        lc_df = mixed[mixed['Event'].str.contains(' L')].copy()
+        sc_df = mixed[mixed['Event'].str.contains(' S')].copy()
+
+        lc_df['Event'] = lc_df['Event'].str.replace(' L', '', regex=False)
+        sc_df['Event'] = sc_df['Event'].str.replace(' S', '', regex=False)
+
+        lc_df.columns = ['Event', 'LC Time']
+        sc_df.columns = ['Event', 'SC Time']
+
+        merged_df = pd.merge(event_template,sc_df, on='Event',how = 'outer')
+        merged_df = pd.merge(merged_df,lc_df, on='Event',how = 'outer')
+        
+        return name,sc_number,merged_df
     def get_times(asa_number):
         event_template  = pd.read_csv("Events-template.csv")
         url = f'https://www.swimmingresults.org/individualbest/personal_best.php?mode=A&tiref={asa_number}'
         page = requests.get(url)
         soup = BeautifulSoup(page.text,'lxml')
+        
         
         def extract_table(table):
             headers = [header.text.strip() for header in table.find_all('th')[:2]]
@@ -70,7 +114,21 @@ def your_function(input_array,course,pool_length):
         return name,asa_number,merged_df
     
     def matrix_input(asa_num,events):
-        name, asa_num, df = get_times(asa_num)
+        if n == 1:
+            name, asa_num, df = get_times(asa_num)
+            print(name)
+            print(asa_num)
+            print(df)
+            print(".................")
+        elif n == 2:
+            name, asa_num, df = swim_cloud(asa_num)
+            print(name)
+            print(asa_num)
+            print(df)
+            print("...............")
+        else:
+            print("Error in choosing website")
+
         if course == 'short':
             row = [df.loc[df['Event'] == i, 'SC Time'].values[0] for i in events]
         else:
