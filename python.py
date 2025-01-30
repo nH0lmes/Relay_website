@@ -38,9 +38,10 @@ async def run_function(data: InputData):
 def your_function(input_array,course,pool_length):
     n=2
     def swim_cloud(sc_number):
-        event_template  = pd.read_csv("D:\Personal\Real Website V2\Events-template.csv")
+        event_template  = pd.read_csv("D:/Personal/Real Website V2/Events-template.csv")
         url = f'https://www.swimcloud.com/swimmer/{sc_number}/'
-        page = requests.get(url)
+        headers1 = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"}
+        page = requests.get(url,headers=headers1)
         soup = BeautifulSoup(page.text,'lxml')
         table = soup.find_all('table')[1]
         name = soup.find('span', {'class' : 'u-mr-'}).text.strip()

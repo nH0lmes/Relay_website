@@ -169,6 +169,7 @@ img {
   display: flex;
   align-items: center;
   margin-bottom: 10px;
+  overflow: hidden;
 }
 
 label {
