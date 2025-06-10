@@ -183,7 +183,12 @@ img {
   flex-direction: column;
   align-items: center;
 }
-
+.swimmer-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
 .swimmer-input {
   width: 60%;
   background-color: var(--light-grey);

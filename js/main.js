@@ -16,7 +16,7 @@ function addSwimmerBox(containerId) {
   wrapper.className = "wrapper";
 
   const nameBox = document.createElement("div");
-  nameBox.className = "swimmer-input new-one";
+  nameBox.className = "swimmer-input";
   nameBox.dataset.index = nameCount;
 
   const label = document.createElement("label");
@@ -52,11 +52,10 @@ function addSwimmerBox(containerId) {
   container.appendChild(wrapper);
 }
 
-function reindexSwimmerBoxes() {
+function reindexSwimmerBoxes(containerId) {
   const container = document.getElementById(containerId);
   const swimmerBoxes = container.querySelectorAll(".swimmer-input");
-
-  nameCount = swimmerBoxes.length;
+  const deleteButtons = container.querySelectorAll(".btn-delete");
 
   swimmerBoxes.forEach((box, index) => {
     const newIndex = index + 1;
@@ -71,10 +70,11 @@ function reindexSwimmerBoxes() {
     input.name = `Swimmer${newIndex}`;
   });
 
-  deleteButtonsContainers.forEach((container, index) => {
+  deleteButtons.forEach((container, index) => {
     const newIndex = index + 1;
     container.dataset.index = newIndex;
   });
+  nameCount = swimmerBoxes.length;
 }
 
 /*Submit button function on the input form*/
