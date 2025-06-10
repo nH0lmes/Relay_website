@@ -98,14 +98,14 @@
             <button class="tablinks" onclick="openSite(event,'ASA')">ASA number</button>
             <button class="tablinks" onclick="openSite(event,'swimcloud')">SwimCloud</button>
           </div>
-          <div id= "ASA" class="tabcontent">
+          <div id= "ASA" class="tabcontent" style="display: block;">
             <p>Insert the ASA numbers for each swimmer into the boxes below</p>
             <form
               action="/submit"
               method="post"
               class="form-container"
               id="swimmer-form"
-            >
+            > 
               <div class="swimmer-input">
                 <label for="Swimmer1">Swimmer 1</label>
                 <div class="divider"></div>
@@ -153,7 +153,8 @@
                   value="1585893"
                 />
               </div>
-              <button type="button" class="btn btn-grey addSwimmerButton" id="addSwimmerButton-asa">
+              <div id="swimmer-container-ASA"></div>
+              <button type="button" class="btn btn-grey addSwimmerButton" id="addSwimmerButton-asa" data-target-container="swimmer-container-ASA">
                 Add +
               </button>
               <div class="radio-wrapper" id="pool">
@@ -226,7 +227,8 @@
                   value="196011"
                 />
               </div>
-              <button type="button" class="btn btn-grey addSwimmerButton" id="addSwimmerButton-sc">
+              <div id="swimmer-container-swimcloud"></div>
+              <button type="button" class="btn btn-grey addSwimmerButton" id="addSwimmerButton-sc" data-target-container="swimmer-container-swimcloud">
                 Add +
               </button>
               <div class="radio-wrapper" id="pool">

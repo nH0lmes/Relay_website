@@ -4,52 +4,57 @@ let tbl_wrapper;
 
 document.querySelectorAll(".addSwimmerButton").forEach(function (button) {
   button.addEventListener("click", function () {
-    nameCount++;
-    const wrapper = document.createElement("div");
-    wrapper.className = "wrapper";
-
-    const nameBox = document.createElement("div");
-    nameBox.className = "swimmer-input new-one";
-    nameBox.dataset.index = nameCount;
-
-    const label = document.createElement("label");
-    label.setAttribute("for", `Swimmer${nameCount}`);
-    label.textContent = `Swimmer ${nameCount}`;
-
-    const divider = document.createElement("div");
-    divider.className = "divider";
-
-    const input = document.createElement("input");
-    input.type = "text";
-    input.inputMode = "numeric";
-    input.id = `Swimmer${nameCount}`;
-    input.name = `Swimmer${nameCount}`;
-
-    const deleteButton = document.createElement("button");
-    deleteButton.type = "button";
-    deleteButton.textContent = "-";
-    deleteButton.className = "btn-delete";
-
-    deleteButton.addEventListener("click", function () {
-      wrapper.remove();
-      reindexSwimmerBoxes();
-    });
-
-    nameBox.appendChild(label);
-    nameBox.appendChild(divider);
-    nameBox.appendChild(input);
-
-    wrapper.appendChild(nameBox);
-    wrapper.appendChild(deleteButton);
-
-    const form = document.getElementById("swimmer-form");
-    form.insertBefore(wrapper, document.getElementById("addSwimmerButton"));
+    const containerId = button.dataset.targetContainer;
+    addSwimmerBox(containerId);
   });
 });
+function addSwimmerBox(containerId) {
+  let container = document.getElementById(containerId);
+  let nameCount = container.querySelectorAll(".swimmer-input").length + 1;
+
+  const wrapper = document.createElement("div");
+  wrapper.className = "wrapper";
+
+  const nameBox = document.createElement("div");
+  nameBox.className = "swimmer-input new-one";
+  nameBox.dataset.index = nameCount;
+
+  const label = document.createElement("label");
+  label.setAttribute("for", `Swimmer${nameCount}`);
+  label.textContent = `Swimmer ${nameCount}`;
+
+  const divider = document.createElement("div");
+  divider.className = "divider";
+
+  const input = document.createElement("input");
+  input.type = "text";
+  input.inputMode = "numeric";
+  input.id = `Swimmer${nameCount}`;
+  input.name = `Swimmer${nameCount}`;
+
+  const deleteButton = document.createElement("button");
+  deleteButton.type = "button";
+  deleteButton.textContent = "-";
+  deleteButton.className = "btn-delete";
+
+  deleteButton.addEventListener("click", function () {
+    wrapper.remove();
+    reindexSwimmerBoxes(containerId);
+  });
+
+  nameBox.appendChild(label);
+  nameBox.appendChild(divider);
+  nameBox.appendChild(input);
+
+  wrapper.appendChild(nameBox);
+  wrapper.appendChild(deleteButton);
+
+  container.appendChild(wrapper);
+}
 
 function reindexSwimmerBoxes() {
-  const swimmerBoxes = document.querySelectorAll(".swimmer-input");
-  const deleteButtonsContainers = document.querySelectorAll(".btn-delete");
+  const container = document.getElementById(containerId);
+  const swimmerBoxes = container.querySelectorAll(".swimmer-input");
 
   nameCount = swimmerBoxes.length;
 
