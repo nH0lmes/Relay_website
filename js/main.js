@@ -2,9 +2,8 @@
 let nameCount = 4;
 let tbl_wrapper;
 
-document
-  .getElementById("addSwimmerButton")
-  .addEventListener("click", function () {
+document.querySelectorAll(".addSwimmerButton").forEach(function (button) {
+  button.addEventListener("click", function () {
     nameCount++;
     const wrapper = document.createElement("div");
     wrapper.className = "wrapper";
@@ -46,6 +45,7 @@ document
     const form = document.getElementById("swimmer-form");
     form.insertBefore(wrapper, document.getElementById("addSwimmerButton"));
   });
+});
 
 function reindexSwimmerBoxes() {
   const swimmerBoxes = document.querySelectorAll(".swimmer-input");
@@ -179,4 +179,22 @@ function tbl_create(swimmer_list) {
   tbl_wrapper.appendChild(tbl);
   tbl_section.appendChild(tbl_wrapper);
   tbl_wrapper.scrollIntoView({ behavior: "smooth" });
+}
+
+/*Tabs function*/
+function openSite(evt, siteName) {
+  var j, tabcontent, tablinks;
+
+  tabcontent = document.getElementsByClassName("tabcontent");
+  for (j = 0; j < tabcontent.length; j++) {
+    tabcontent[j].style.display = "none";
+  }
+
+  tablinks = document.getElementsByClassName("tablinks");
+  for (i = 0; i < tablinks.length; i++) {
+    tablinks[i].className = tablinks[i].className.replace(" active", "");
+  }
+
+  document.getElementById(siteName).style.display = "block";
+  evt.currentTarget.className += "active";
 }

@@ -94,78 +94,156 @@
         <div class="box input_box2">
           <h1>Build your Relay</h1>
           <div class="text_seperator"></div>
-          <p>Insert the ASA numbers for each swimmer into the boxes below</p>
-          <form
-            action="/submit"
-            method="post"
-            class="form-container"
-            id="swimmer-form"
-          >
-            <div class="swimmer-input">
-              <label for="Swimmer1">Swimmer 1</label>
-              <div class="divider"></div>
-              <input
-                type="text"
-                inputmode="numeric"
-                name="Swimmer1"
-                id="Swimmer1"
-                value="1165975"
-              />
-            </div>
+          <div class="tab">
+            <button class="tablinks" onclick="openSite(event,'ASA')">ASA number</button>
+            <button class="tablinks" onclick="openSite(event,'swimcloud')">SwimCloud</button>
+          </div>
+          <div id= "ASA" class="tabcontent">
+            <p>Insert the ASA numbers for each swimmer into the boxes below</p>
+            <form
+              action="/submit"
+              method="post"
+              class="form-container"
+              id="swimmer-form"
+            >
+              <div class="swimmer-input">
+                <label for="Swimmer1">Swimmer 1</label>
+                <div class="divider"></div>
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  name="Swimmer1"
+                  id="Swimmer1"
+                  value="1165975"
+                />
+              </div>
 
-            <div class="swimmer-input">
-              <label for="Swimmer2">Swimmer 2</label>
-              <div class="divider"></div>
-              <input
-                type="text"
-                inputmode="numeric"
-                name="Swimmer2"
-                id="Swimmer2"
-                value="1165969"
-              />
-            </div>
+              <div class="swimmer-input">
+                <label for="Swimmer2">Swimmer 2</label>
+                <div class="divider"></div>
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  name="Swimmer2"
+                  id="Swimmer2"
+                  value="1165969"
+                />
+              </div>
 
-            <div class="swimmer-input">
-              <label for="Swimmer3">Swimmer 3</label>
-              <div class="divider"></div>
-              <input
-                type="text"
-                inputmode="numeric"
-                name="Swimmer3"
-                id="Swimmer3"
-                value="1160036"
-              />
-            </div>
+              <div class="swimmer-input">
+                <label for="Swimmer3">Swimmer 3</label>
+                <div class="divider"></div>
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  name="Swimmer3"
+                  id="Swimmer3"
+                  value="1160036"
+                />
+              </div>
 
-            <div class="swimmer-input">
-              <label for="Swimmer4">Swimmer 4</label>
-              <div class="divider"></div>
-              <input
-                type="text"
-                inputmode="numeric"
-                name="Swimmer4"
-                id="Swimmer4"
-                value="1585893"
-              />
-            </div>
-            <button type="button" class="btn btn-grey" id="addSwimmerButton">
-              Add +
-            </button>
-            <div class="radio-wrapper" id="pool">
-              <input type="radio" name="course-type" id="short-course" value="short">
-              <label class="radio-label" for="short-course">Short Course</label>
-              <input type="radio" name="course-type" id="long-course" value="long">
-              <label class="radio-label" for="long-course">Long Course</label>
-            </div>
-            <div class="radio-wrapper" id="race-length">
-              <input type="radio" name="pool-length" id="50" value="50">
-              <label class="radio-label" for="50">4 &#215; 50m</label>
-              <input type="radio" name="pool-length" id="100" value="100">
-              <label class="radio-label" for="100">4 &#215; 100m</label>
-            </div>
-            <button class="btn" type="submit">Submit</button>
-          </form>
-          
+              <div class="swimmer-input">
+                <label for="Swimmer4">Swimmer 4</label>
+                <div class="divider"></div>
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  name="Swimmer4"
+                  id="Swimmer4"
+                  value="1585893"
+                />
+              </div>
+              <button type="button" class="btn btn-grey addSwimmerButton" id="addSwimmerButton-asa">
+                Add +
+              </button>
+              <div class="radio-wrapper" id="pool">
+                <input type="radio" name="course-type" class="short-course" id="short-course-asa" value="short">
+                <label class="radio-label" for="short-course-asa">Short Course</label>
+                <input type="radio" name="course-type" class="long-course" id="long-course" value="long">
+                <label class="radio-label" for="long-course-asa">Long Course</label>
+              </div>
+              <div class="radio-wrapper" id="race-length">
+                <input type="radio" name="pool-length" class="50" id="50-asa" value="50">
+                <label class="radio-label" for="50-asa">4 &#215; 50m</label>
+                <input type="radio" name="pool-length" class="100" id="100-asa" value="100">
+                <label class="radio-label" for="100-asa">4 &#215; 100m</label>
+              </div>
+              <button class="btn" type="submit">Submit</button>
+            </form>
+          </div>
+          <div id="swimcloud" class="tabcontent">
+            <p>Insert the SwimCloud numbers for each swimmer into the boxes below</p>
+            <form
+              action="/submit"
+              method="post"
+              class="form-container"
+              id="swimmer-form"
+            >
+              <div class="swimmer-input">
+                <label for="Swimmer1">Swimmer 1</label>
+                <div class="divider"></div>
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  name="Swimmer1"
+                  id="Swimmer1"
+                  value="2361642"
+                />
+              </div>
+
+              <div class="swimmer-input">
+                <label for="Swimmer2">Swimmer 2</label>
+                <div class="divider"></div>
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  name="Swimmer2"
+                  id="Swimmer2"
+                  value="2361646"
+                />
+              </div>
+
+              <div class="swimmer-input">
+                <label for="Swimmer3">Swimmer 3</label>
+                <div class="divider"></div>
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  name="Swimmer3"
+                  id="Swimmer3"
+                  value="1283295"
+                />
+              </div>
+
+              <div class="swimmer-input">
+                <label for="Swimmer4">Swimmer 4</label>
+                <div class="divider"></div>
+                <input
+                  type="text"
+                  inputmode="numeric"
+                  name="Swimmer4"
+                  id="Swimmer4"
+                  value="196011"
+                />
+              </div>
+              <button type="button" class="btn btn-grey addSwimmerButton" id="addSwimmerButton-sc">
+                Add +
+              </button>
+              <div class="radio-wrapper" id="pool">
+                <input type="radio" name="course-type" class="short-course" id="short-course-sc" value="short">
+                <label class="radio-label" for="short-course-sc">Short Course</label>
+                <input type="radio" name="course-type" class="long-course" id="long-course-sc" value="long">
+                <label class="radio-label" for="long-course-sc">Long Course</label>
+              </div>
+              <div class="radio-wrapper" id="race-length">
+                <input type="radio" name="pool-length" class="50" id="50-sc" value="50">
+                <label class="radio-label" for="50-sc">4 &#215; 50m</label>
+                <input type="radio" name="pool-length" class="100" id="100-sc" value="100">
+                <label class="radio-label" for="100-sc">4 &#215; 100m</label>
+              </div>
+              <button class="btn" type="submit">Submit</button>
+            </form>
+          </div>  
         </div>
       </div>
     </section>
