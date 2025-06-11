@@ -36,7 +36,7 @@ async def run_function(data: InputData):
         raise HTTPException(status_code=400, detail=str(e))
 
 def your_function(input_array,course,pool_length):
-    n=1
+    n=2
     def swim_cloud(sc_number):
         event_template  = pd.read_csv("D:/Personal/Real Website V2/Events-template.csv")
         url = f'https://www.swimcloud.com/swimmer/{sc_number}/'
