@@ -10,27 +10,61 @@ document.querySelectorAll(".addSwimmerButton").forEach(function (button) {
 });
 function addSwimmerBox(containerId) {
   let container = document.getElementById(containerId);
-  let nameCount = container.querySelectorAll(".swimmer-input").length + 1;
+  let nameCount = container.querySelectorAll(".individual-input").length + 1;
 
   const wrapper = document.createElement("div");
-  wrapper.className = "wrapper";
+  wrapper.className = "individual-input";
 
-  const nameBox = document.createElement("div");
-  nameBox.className = "swimmer-input";
-  nameBox.dataset.index = nameCount;
+  const header = document.createElement("h2");
+  header.textContent = `Swimmer ${nameCount}`;
 
-  const label = document.createElement("label");
-  label.setAttribute("for", `Swimmer${nameCount}`);
-  label.textContent = `Swimmer ${nameCount}`;
+  const asa_num = document.createElement("div");
+  asa_num.className = "form-input";
 
-  const divider = document.createElement("div");
-  divider.className = "divider";
+  const label_asa = document.createElement("label");
+  label_asa.setAttribute("for", `asa-number${nameCount}`);
+  label_asa.textContent = `Swimmer ${nameCount}`;
 
-  const input = document.createElement("input");
-  input.type = "text";
-  input.inputMode = "numeric";
-  input.id = `Swimmer${nameCount}`;
-  input.name = `Swimmer${nameCount}`;
+  const input_asa = document.createElement("input");
+  input_asa.type = "text";
+  input_asa.inputMode = "numeric";
+  input_asa.id = `asa-number1${nameCount}`;
+  input_asa.name = `asa-number1${nameCount}`;
+
+  asa_num.append(label_asa);
+  asa_num.append(input_asa);
+
+  const name = document.createElement("div");
+  name.className = "form-input";
+
+  const label_name = document.createElement("label");
+  label_name.setAttribute("for", `name${nameCount}`);
+  label_name.textContent = "Name";
+
+  const input_name = document.createElement("input");
+  input_name.type = "text";
+  input_name.placeholder = "Enter Full Name";
+  input_name.id = `name${nameCount}`;
+  input_name.name = `name${nameCount}`;
+
+  name.append(label_name);
+  name.append(input_name);
+
+  const club = document.createElement("div");
+  club.className = "form-input";
+
+  const label_club = document.createElement("label");
+  label_club.setAttribute("for", `club${nameCount}`);
+  label_club.textContent = "Club";
+
+  const input_club = document.createElement("input");
+  input_club.type = "text";
+  input_club.placeholder = "Enter Club";
+  input_club.id = `club${nameCount}`;
+  input_club.name = `club${nameCount}`;
+
+  club.append(label_club);
+  club.append(input_club);
 
   const deleteButton = document.createElement("button");
   deleteButton.type = "button";
@@ -42,12 +76,7 @@ function addSwimmerBox(containerId) {
     reindexSwimmerBoxes(containerId);
   });
 
-  nameBox.appendChild(label);
-  nameBox.appendChild(divider);
-  nameBox.appendChild(input);
-
-  wrapper.appendChild(nameBox);
-  wrapper.appendChild(deleteButton);
+  wrapper.append(header, asa_num, name, club, deleteButton);
 
   container.appendChild(wrapper);
 }
