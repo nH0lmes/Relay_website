@@ -6,62 +6,74 @@ from bs4 import BeautifulSoup
 import requests
 import pandas as pd
 import math
+import aiohttp
+import asyncio
+import asyncpg
+import time
 
-conn = psycopg2.connect(
-    dbname = "relay_website",
+
+
+semaphore = asyncio.Semaphore(25)
+async def get_data(asa_number,session):
+    async with semaphore:
+        url = f'https://www.swimmingresults.org/individualbest/personal_best.php?mode=A&tiref={asa_number}'
+        headers = {"User-Agent": "Mozilla/5.0"}
+        async with session.get(url,headers=headers) as response:
+            page = await response.text()
+            if "No information found for this individual." in page:
+                return None, None, None, None
+            soup = BeautifulSoup(page,'lxml')
+            info = soup.find('p', class_ = 'rnk_sj')
+            if not info:
+                return None, None, None, None
+        
+            values = info.text.strip().split(" - ")
+            name, asa_num, club = (values + [None])[:3]
+            name_parts = name.split(" ")
+            if len(name_parts) > 1:
+                first_name = " ".join(name_parts[:-1])
+                last_name = name_parts[-1]
+            else:
+                first_name = name_parts[0]
+                last_name = None
+            return first_name,last_name, asa_number,club
+
+async def process_batch(start, end, conn, session):
+    print(f"Processing ASA numbers {start} to {end - 1}")
+    tasks = [get_data(i, session) for i in range(start, end)]
+    results = await asyncio.gather(*tasks)
+    valid = [res for res in results if res[0] is not None]
+    await conn.executemany("""
+        INSERT INTO swimmers (first_name, last_name, asa_number, club)
+        VALUES ($1, $2, $3, $4)
+        ON CONFLICT (asa_number) DO UPDATE SET
+            first_name = EXCLUDED.first_name,
+            last_name = EXCLUDED.last_name,
+            club = EXCLUDED.club;
+    """, valid
+    )
+    
+
+
+async def main():
+    conn = await asyncpg.connect(
+    database = "relay_website",
     user = "postgres",
     password = "Holmesy0804!",
     host = "localhost",
     port=5432
-)
-db = []
-cursor = conn.cursor()
-def get_data(asa_number):
-    url = f'https://www.swimmingresults.org/individualbest/personal_best.php?mode=A&tiref={asa_number}'
-    headers1 = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"}
-    page = requests.get(url)
-    soup = BeautifulSoup(page.text,'lxml')
-    info = soup.find('p', {'class' : 'rnk_sj'})
-    if info is None:
-        return None,None,None,None
-    info = info.text.strip()
-    values = info.split(" - ")
-    if len(values) ==3:
-        name, asa_num, club = values
-    elif len(values) == 2:
-        name,asa_num = values
-        club = None
-    name_parts = name.split(" ")
-    if len(name_parts) > 1:
-        first_name = " ".join(name_parts[:-1])
-        last_name = name_parts[-1]
-    else:
-        first_name = name_parts[0]
-        last_name = None
-    return first_name,last_name, asa_number,club
+    )
+    async with aiohttp.ClientSession() as session:
+        for batch_start in range(1,10000,1000):
+            batch_end = batch_start + 1000
+            await process_batch(batch_start,batch_end,conn,session)
+    await conn.close()
 
-# first_name,last_name, asa_number,club = get_data(1772352)
-# print(first_name)
-# print(last_name)
-# print(club)
-# print(asa_number)
 
-skipped = 0
-for i in range(1,1000):
-    first_name, last_name,asa_num,club= get_data(i)
-    if i%100 ==0:
-        print (i)
-    if first_name == None:
-        skipped+=1
-        continue
-    else:
-        db.append((first_name,last_name,asa_num))
-        
-# cursor.execute("""
-        #             INSERT INTO swimmers (first_name,last_name, ASA_number,club)
-        #             VALUES(%s, %s, %s, %s);
-        # """, (first_name,last_name,asa_num,club))
-print(skipped)
-conn.commit()
-cursor.close()
-conn.close()
+
+
+if __name__ == "__main__":
+    start = time.time()
+    asyncio.run(main())
+    print(f"Completed in {time.time() - start:.2f} seconds")
+
