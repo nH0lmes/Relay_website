@@ -7,6 +7,9 @@ from bs4 import BeautifulSoup
 import requests
 import pandas as pd
 import math
+from fastapi import FastAPI, Query
+from fastapi.middleware.cors import CORSMiddleware
+import asyncpg
 
 app = FastAPI()
 
@@ -36,7 +39,7 @@ async def run_function(data: InputData):
         raise HTTPException(status_code=400, detail=str(e))
 
 def your_function(input_array,course,pool_length):
-    n=2
+    n=1
     def swim_cloud(sc_number):
         event_template  = pd.read_csv("D:/Personal/Real Website V2/Events-template.csv")
         url = f'https://www.swimcloud.com/swimmer/{sc_number}/'
@@ -186,6 +189,26 @@ def your_function(input_array,course,pool_length):
 
     return(sorted_array)
 
+@app.get("/search")
+async def search_swimmers(q: str = Query( ..., min_length=1)):
+    conn = await asyncpg.connect(
+    database = "relay_website",
+    user = "postgres",
+    password = "Holmesy0804!",
+    host = "localhost",
+    port=5432
+    )
+    rows = await conn.fetch(
+        """
+        SELECT first_name, last_name, asa_number, club
+        FROM swimmers
+        WHERE lower(first_name || ' ' || last_name) like lower ($1)
+        LIMIT 5
+        """,
+        f"%{q}%"
+    )
+    await conn.close()
+    return [dict(row) for row in rows]
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000,log_level="info")

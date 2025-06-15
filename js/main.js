@@ -23,13 +23,13 @@ function addSwimmerBox(containerId) {
 
   const label_asa = document.createElement("label");
   label_asa.setAttribute("for", `asa-number${nameCount}`);
-  label_asa.textContent = `Swimmer ${nameCount}`;
+  label_asa.textContent = "ASA number";
 
   const input_asa = document.createElement("input");
   input_asa.type = "text";
   input_asa.inputMode = "numeric";
-  input_asa.id = `asa-number1${nameCount}`;
-  input_asa.name = `asa-number1${nameCount}`;
+  input_asa.id = `asa-number${nameCount}`;
+  input_asa.name = `asa-number${nameCount}`;
 
   asa_num.append(label_asa);
   asa_num.append(input_asa);
@@ -46,9 +46,13 @@ function addSwimmerBox(containerId) {
   input_name.placeholder = "Enter Full Name";
   input_name.id = `name${nameCount}`;
   input_name.name = `name${nameCount}`;
+  input_name.classList.add("search-input");
 
-  name.append(label_name);
-  name.append(input_name);
+  const autocomplete = document.createElement("div");
+  autocomplete.id = `autocomplete-list${nameCount}`;
+  autocomplete.className = "autocomplete-items";
+
+  name.append(label_name, input_name, autocomplete);
 
   const club = document.createElement("div");
   club.className = "form-input";
@@ -63,8 +67,7 @@ function addSwimmerBox(containerId) {
   input_club.id = `club${nameCount}`;
   input_club.name = `club${nameCount}`;
 
-  club.append(label_club);
-  club.append(input_club);
+  club.append(label_club, input_club);
 
   const deleteButton = document.createElement("button");
   deleteButton.type = "button";
@@ -76,27 +79,40 @@ function addSwimmerBox(containerId) {
     reindexSwimmerBoxes(containerId);
   });
 
-  wrapper.append(header, asa_num, name, club, deleteButton);
+  wrapper.append(header, name, asa_num, club, deleteButton);
 
   container.appendChild(wrapper);
+  setupAutocomplete(input_name);
 }
 
 function reindexSwimmerBoxes(containerId) {
   const container = document.getElementById(containerId);
-  const swimmerBoxes = container.querySelectorAll(".swimmer-input");
+  const swimmerBoxes = container.querySelectorAll(".individual-input");
   const deleteButtons = container.querySelectorAll(".btn-delete");
 
   swimmerBoxes.forEach((box, index) => {
     const newIndex = index + 1;
     box.dataset.index = newIndex;
 
-    const label = box.querySelector("label");
-    const input = box.querySelector("input");
+    const header = box.querySelector("h2");
+    header.textContent = `Swimmer ${newIndex}`;
 
-    label.setAttribute("for", `Swimmer${newIndex}`);
-    label.textContent = `Swimmer ${newIndex}`;
-    input.id = `Swimmer${newIndex}`;
-    input.name = `Swimmer${newIndex}`;
+    const asaInput = box.querySelector("input[id^='asa-number']");
+    const asaLabel = box.querySelector("label[for^='asa-number']");
+    asaInput.id = `asa-number${newIndex}`;
+    asaInput.name = `asa-number${newIndex}`;
+
+    const nameInput = box.querySelector("input[id^='name']");
+    const nameLabel = box.querySelector("label[for^='name']");
+    nameInput.id = `name${newIndex}`;
+    nameInput.name = `name${newIndex}`;
+    nameLabel.setAttribute("for", `name${newIndex}`);
+
+    const clubInput = box.querySelector("input[id^='club']");
+    const clubLabel = box.querySelector("label[for^='club']");
+    clubInput.id = `club${newIndex}`;
+    clubInput.name = `club${newIndex}`;
+    clubLabel.setAttribute("for", `club${newIndex}`);
   });
 
   deleteButtons.forEach((container, index) => {
@@ -116,11 +132,11 @@ document.querySelectorAll(".form-container").forEach((form) => {
 
     let course = form.querySelector('input[name="course-type"]:checked');
     let poolLength = form.querySelector("input[name=pool-length]:checked");
-
+    nameCount = form.querySelectorAll(".individual-input").length;
     if (course != null) {
       let swimmer_list = [];
       for (let i = 1; i <= nameCount; i++) {
-        const swimmer = form.querySelector(`#Swimmer${i}`).value;
+        const swimmer = form.querySelector(`#asa-number${i}`).value;
         swimmer_list.push(swimmer);
       }
       try {
@@ -230,3 +246,36 @@ function openSite(evt, siteName) {
   document.getElementById(siteName).style.display = "block";
   evt.currentTarget.className += "active";
 }
+
+function setupAutocomplete(searchInput) {
+  const idSuffix = searchInput.id.match(/\d+$/)?.[0];
+  if (!idSuffix) return;
+
+  const resultBox = document.getElementById(`autocomplete-list${idSuffix}`);
+  const asaInput = document.getElementById(`asa-number${idSuffix}`);
+  const clubInput = document.getElementById(`club${idSuffix}`);
+
+  searchInput.addEventListener("input", async () => {
+    const query = searchInput.value.trim();
+    if (!query) return (resultBox.innerHTML = "");
+
+    const res = await fetch(
+      "http://localhost:8000/search?q=" + encodeURIComponent(query)
+    );
+    const suggestions = await res.json();
+
+    resultBox.innerHTML = "";
+    suggestions.forEach((swimmer) => {
+      const item = document.createElement("div");
+      item.textContent = `${swimmer.first_name} ${swimmer.last_name} - ${swimmer.asa_number} - ${swimmer.club}`;
+      item.addEventListener("click", () => {
+        searchInput.value = `${swimmer.first_name} ${swimmer.last_name}`;
+        asaInput.value = swimmer.asa_number;
+        clubInput.value = swimmer.club;
+        resultBox.innerHTML = "";
+      });
+      resultBox.appendChild(item);
+    });
+  });
+}
+document.querySelectorAll(".search-input").forEach(setupAutocomplete);
