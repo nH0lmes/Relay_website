@@ -83,6 +83,7 @@ function addSwimmerBox(containerId) {
 
   container.appendChild(wrapper);
   setupAutocomplete(input_name);
+  return wrapper;
 }
 
 function reindexSwimmerBoxes(containerId) {
@@ -246,6 +247,29 @@ function openSite(evt, siteName) {
   document.getElementById(siteName).style.display = "block";
   evt.currentTarget.className += "active";
 }
+clubSearchInput = document.getElementById("filter-club");
+clubSearchInput.addEventListener("input", async () => {
+  const resultBox = document.getElementById("autocomplete-club");
+  const query = clubSearchInput.value.trim();
+  if (!query) return (resultBox.innerHTML = "");
+
+  const res = await fetch(
+    "http://localhost:8000/search-clubs?q=" + encodeURIComponent(query)
+  );
+  const suggestions = await res.json();
+
+  resultBox.innerHTML = "";
+  console.log(suggestions);
+  suggestions.forEach((club) => {
+    const item = document.createElement("div");
+    item.textContent = club.club;
+    item.addEventListener("click", () => {
+      clubSearchInput.value = club.club;
+      resultBox.innerHTML = "";
+    });
+    resultBox.appendChild(item);
+  });
+});
 
 function setupAutocomplete(searchInput) {
   const idSuffix = searchInput.id.match(/\d+$/)?.[0];
@@ -279,3 +303,46 @@ function setupAutocomplete(searchInput) {
   });
 }
 document.querySelectorAll(".search-input").forEach(setupAutocomplete);
+
+document.getElementById("apply-filters").addEventListener("click", async () => {
+  const club = document.getElementById("filter-club").value.trim();
+  const gender = document.getElementById("filter-gender").value;
+  const minAge = document.getElementById("filter-age-min").value || 0;
+  const maxAge = document.getElementById("filter-age-max").value || 100;
+
+  const params = new URLSearchParams({
+    club,
+    gender,
+    min_age: minAge,
+    max_age: maxAge,
+  });
+  console.log(params.toString());
+  const res = await fetch(
+    `http://localhost:8000/filter-swimmers?${params.toString()}`
+  );
+  const swimmers = await res.json();
+
+  const existingBoxes = document.querySelectorAll(".individual-input");
+  const container = document.getElementById("swimmer-container-ASA");
+  container.innerHTML = "";
+  swimmers.forEach(async (swimmer, index) => {
+    let wrapper;
+    const num = index + 1;
+    wrapper = addSwimmerBox("swimmer-container-ASA");
+    const nameInput = wrapper.querySelector("input[id^='name']");
+    const asaInput = wrapper.querySelector("input[id^='asa-number']");
+    const clubInput = wrapper.querySelector("input[id^='club']");
+
+    if (nameInput)
+      nameInput.value = `${swimmer.first_name} ${swimmer.last_name}`;
+    if (asaInput) asaInput.value = swimmer.asa_number;
+    if (clubInput) clubInput.value = swimmer.club;
+
+    await setupAutocomplete(wrapper);
+  });
+  let new_boxes = document.querySelectorAll(".individual-input");
+  while (new_boxes.length < 4) {
+    wrapper = addSwimmerBox("swimmer-container-ASA");
+    new_boxes = document.querySelectorAll(".individual-input");
+  }
+});

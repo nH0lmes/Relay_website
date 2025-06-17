@@ -10,12 +10,13 @@ import math
 from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 import asyncpg
+from typing import Optional
 
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  
+    allow_origins=["http://127.0.0.1:5501"],  
     allow_credentials=True,
     allow_methods=["*"], 
     allow_headers=["*"], 
@@ -209,6 +210,55 @@ async def search_swimmers(q: str = Query( ..., min_length=1)):
     )
     await conn.close()
     return [dict(row) for row in rows]
+@app.get("/search-clubs")
+async def search_swimmers(q: str = Query( ..., min_length=1)):
+    conn = await asyncpg.connect(
+    database = "relay_website",
+    user = "postgres",
+    password = "Holmesy0804!",
+    host = "localhost",
+    port=5432
+    )
+    rows = await conn.fetch(
+        """
+        SELECT DISTINCT club
+        FROM swimmers
+        WHERE lower(club) LIKE '%' || lower($1) || '%'
+        LIMIT 5
+        """,
+        f"%{q}%"
+    )
+    await conn.close()
+    return [dict(row) for row in rows]
+
+@app.get("/filter-swimmers")
+async def filter_swimmers(
+    club: Optional[str] = None,
+    gender: Optional[str] = None,
+    min_age: Optional[int] = None,
+    max_age: Optional[int] = None
+
+):
+    query = """
+        SELECT first_name,last_name,asa_number,club
+        FROM swimmers
+        WHERE ($1 IS NULL OR LOWER(club) LIKE LOWER($1))
+          AND ($2 IS NULL OR gender = $2)
+          AND ($3 IS NULL OR yob >= $3)
+          AND ($4 IS NULL OR yob <= $4)
+        LIMIT 100
+    """
+    conn = await asyncpg.connect(
+    database = "relay_website",
+    user = "postgres",
+    password = "Holmesy0804!",
+    host = "localhost",
+    port=5432
+    )
+    rows = await conn.fetch(query, f"%{club}%", gender, min_age, max_age)
+    await conn.close()
+    return [dict(row) for row in rows]
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000,log_level="info")
