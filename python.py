@@ -7,15 +7,21 @@ from bs4 import BeautifulSoup
 import requests
 import pandas as pd
 import math
+from fastapi import FastAPI, Query
+#from fastapi.middleware.cors import CORSMiddleware
+import asyncpg
+from typing import Optional
+import datetime
+
+
 
 app = FastAPI()
-
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  
+    allow_origins=['*'],  
     allow_credentials=True,
-    allow_methods=["*"], 
-    allow_headers=["*"], 
+    allow_methods=['*'], 
+    allow_headers=['*'], 
 )
 
 # Define the request body model
@@ -36,7 +42,7 @@ async def run_function(data: InputData):
         raise HTTPException(status_code=400, detail=str(e))
 
 def your_function(input_array,course,pool_length):
-    n=2
+    n=1
     def swim_cloud(sc_number):
         event_template  = pd.read_csv("D:/Personal/Real Website V2/Events-template.csv")
         url = f'https://www.swimcloud.com/swimmer/{sc_number}/'
@@ -186,6 +192,82 @@ def your_function(input_array,course,pool_length):
 
     return(sorted_array)
 
+@app.get("/search")
+async def search_swimmers(q: str = Query( ..., min_length=1)):
+    conn = await asyncpg.connect(
+    database = "relay_website",
+    user = "postgres",
+    password = "Holmesy0804!",
+    host = "localhost",
+    port=5432
+    )
+    rows = await conn.fetch(
+        """
+        SELECT first_name, last_name, asa_number, club
+        FROM swimmers
+        WHERE lower(first_name || ' ' || last_name) like lower ($1)
+        LIMIT 5
+        """,
+        f"%{q}%"
+    )
+    await conn.close()
+    return [dict(row) for row in rows]
+@app.get("/search-clubs")
+async def search_swimmers(q: str = Query( ..., min_length=1)):
+    conn = await asyncpg.connect(
+    database = "relay_website",
+    user = "postgres",
+    password = "Holmesy0804!",
+    host = "localhost",
+    port=5432
+    )
+    rows = await conn.fetch(
+        """
+        SELECT DISTINCT club
+        FROM swimmers
+        WHERE lower(club) LIKE '%' || lower($1) || '%'
+        LIMIT 5
+        """,
+        f"%{q}%"
+    )
+    await conn.close()
+    return [dict(row) for row in rows]
+
+@app.get("/filter-swimmers")
+async def filter_swimmers(
+    club: Optional[str] = None,
+    gender: Optional[str] = None,
+    min_age: Optional[int] = None,
+    max_age: Optional[int] = None
+
+):
+    current_year = datetime.datetime.now().year
+    
+    min_year = current_year - max_age
+    max_year = current_year - min_age
+    query = """
+        SELECT first_name,last_name,asa_number,club
+        FROM swimmers
+        WHERE ($1::text IS NULL OR LOWER(club) LIKE LOWER($1))
+          AND ($2::text = '' OR gender = $2)
+          AND ($3::int IS NULL OR yob >= $3)
+          AND ($4::int IS NULL OR yob <= $4)
+        LIMIT 100
+    """
+    conn = await asyncpg.connect(
+    database = "relay_website",
+    user = "postgres",
+    password = "Holmesy0804!",
+    host = "localhost",
+    port=5432
+    )
+    rows = await conn.fetch(query, f"%{club}%", gender, min_year, max_year)
+    await conn.close()
+    swimmers = [dict(row) for row in rows]
+    sorted_swimmers = sorted(swimmers, key=lambda x: x['first_name'])
+    print(rows)
+    return sorted_swimmers
+
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000,log_level="info")
+    uvicorn.run(app, host="0.0.0.0", port=5000,log_level="info")
