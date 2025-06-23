@@ -191,6 +191,7 @@ img {
   flex-wrap: wrap;
 }
 .individual-input {
+  position: relative;
   padding: 20px;
   margin: 20px auto;
   border: 1px solid #ccc;
@@ -268,7 +269,19 @@ input[type="text"]:focus {
   align-items: center;
   margin: 0 20px 10px 0;
 }
-
+.fa-trash {
+  color: red;
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 10px 10px 0 0;
+  transition: 0.3s;
+  cursor: pointer;
+}
+.fa-trash:hover {
+  color: darkred;
+  transition: 0.5s;
+}
 .btn-delete {
   font-size: 2em;
   font-weight: bold height 30px;

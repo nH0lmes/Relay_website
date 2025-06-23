@@ -8,6 +8,13 @@ document.querySelectorAll(".addSwimmerButton").forEach(function (button) {
     addSwimmerBox(containerId);
   });
 });
+document.addEventListener("DOMContentLoaded", function () {
+  const containerId = "swimmer-container-ASA"; // replace with your actual container ID
+  for (let i = 0; i < 4; i++) {
+    addSwimmerBox(containerId);
+  }
+});
+
 function addSwimmerBox(containerId) {
   let container = document.getElementById(containerId);
   let nameCount = container.querySelectorAll(".individual-input").length + 1;
@@ -69,10 +76,8 @@ function addSwimmerBox(containerId) {
 
   club.append(label_club, input_club);
 
-  const deleteButton = document.createElement("button");
-  deleteButton.type = "button";
-  deleteButton.textContent = "-";
-  deleteButton.className = "btn-delete";
+  const deleteButton = document.createElement("i");
+  deleteButton.className = "delete-button fa-solid fa-trash";
 
   deleteButton.addEventListener("click", function () {
     wrapper.remove();
@@ -83,6 +88,7 @@ function addSwimmerBox(containerId) {
 
   container.appendChild(wrapper);
   setupAutocomplete(input_name);
+  updateDeleteButtons();
   return wrapper;
 }
 
@@ -121,6 +127,17 @@ function reindexSwimmerBoxes(containerId) {
     container.dataset.index = newIndex;
   });
   nameCount = swimmerBoxes.length;
+  updateDeleteButtons();
+}
+function updateDeleteButtons() {
+  const boxes = document.querySelectorAll(".individual-input"); // adjust selector as needed
+  const deleteButtons = document.querySelectorAll(".delete-button");
+
+  if (boxes.length < 5) {
+    deleteButtons.forEach((btn) => (btn.style.display = "none"));
+  } else {
+    deleteButtons.forEach((btn) => (btn.style.display = "inline-block"));
+  }
 }
 
 /*Submit button function on the input form*/
