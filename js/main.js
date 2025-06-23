@@ -169,7 +169,7 @@ async function runPython(swimmer_array, course, poolLength) {
     courseType: course,
     pool_length: poolLength,
   };
-  const response = await fetch("http://127.0.0.1:8000/run-function/", {
+  const response = await fetch("http://127.0.0.1:5000/run-function/", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -254,7 +254,7 @@ clubSearchInput.addEventListener("input", async () => {
   if (!query) return (resultBox.innerHTML = "");
 
   const res = await fetch(
-    "http://localhost:8000/search-clubs?q=" + encodeURIComponent(query)
+    "http://localhost:5000/search-clubs?q=" + encodeURIComponent(query)
   );
   const suggestions = await res.json();
 
@@ -284,7 +284,7 @@ function setupAutocomplete(searchInput) {
     if (!query) return (resultBox.innerHTML = "");
 
     const res = await fetch(
-      "http://localhost:8000/search?q=" + encodeURIComponent(query)
+      "http://localhost:5000/search?q=" + encodeURIComponent(query)
     );
     const suggestions = await res.json();
 
@@ -318,7 +318,7 @@ document.getElementById("apply-filters").addEventListener("click", async () => {
   });
   console.log(params.toString());
   const res = await fetch(
-    `http://localhost:8000/filter-swimmers?${params.toString()}`
+    `http://localhost:5000/filter-swimmers?${params.toString()}`
   );
   const swimmers = await res.json();
 

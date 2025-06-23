@@ -71,8 +71,6 @@ async def process_batch(start, end, conn, session):
     """, valid
     )
     
-
-
 async def main():
     conn = await asyncpg.connect(
     database = "relay_website",
