@@ -159,6 +159,66 @@ img {
 }
 .tabcontent {
   display: none;
+  justify-content: center;
+}
+#ASA {
+  text-align: center;
+}
+/* Filter Bar */
+.filter-bar {
+  width: 60%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+}
+
+#filter-club {
+  width: 100%;
+  margin: 0;
+  padding: 8px;
+  justify-self: left;
+}
+.club-input-wrapper {
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+#autocomplete-club {
+  position: absolute;
+
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+#autocomplete-club div {
+  padding: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+  text-align: left;
+}
+#autocomplete-club div:hover,
+#autocomplete-club div.active {
+  background-color: #f0f0f0;
+}
+.filter-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.filter-row select,
+.filter-row input,
+.filter-row button {
+  flex: 1;
+  padding: 8px;
+  min-width: 100px;
+  box-sizing: border-box;
 }
 
 /*Input Section*/
