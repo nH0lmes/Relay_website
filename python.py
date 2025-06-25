@@ -201,17 +201,50 @@ async def search_swimmers(q: str = Query( ..., min_length=1)):
     host = "localhost",
     port=5432
     )
+    query_prefix = f"{q.lower()}%"
+    query_loose = f"%{q.lower()}%"
+
+    # Tier 1: Prefix match
     rows = await conn.fetch(
         """
         SELECT first_name, last_name, asa_number, club
         FROM swimmers
-        WHERE lower(first_name || ' ' || last_name) like lower ($1)
+        WHERE lower(first_name) LIKE $1
+           OR lower(first_name || ' ' || last_name) LIKE $1
         LIMIT 5
         """,
-        f"%{q}%"
+        query_prefix
     )
+
+    # Tier 2: Partial match
+    if not rows:
+        rows = await conn.fetch(
+            """
+            SELECT first_name, last_name, asa_number, club
+            FROM swimmers
+            WHERE lower(first_name || ' ' || last_name) LIKE $1
+            LIMIT 5
+            """,
+            query_loose
+        )
+
+    # Tier 3: Fuzzy match
+    if not rows:
+        await conn.execute("SET pg_trgm.similarity_threshold = 0.3;")  # Tweak as needed
+        rows = await conn.fetch(
+            """
+            SELECT first_name, last_name, asa_number, club
+            FROM swimmers
+            WHERE similarity(lower(first_name || ' ' || last_name), $1) > 0.3
+            ORDER BY similarity(lower(first_name || ' ' || last_name), $1) DESC
+            LIMIT 5
+            """,
+            q.lower()
+        )
+
     await conn.close()
     return [dict(row) for row in rows]
+
 @app.get("/search-clubs")
 async def search_swimmers(q: str = Query( ..., min_length=1)):
     conn = await asyncpg.connect(

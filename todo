@@ -1,11 +1,8 @@
 
-[ ] Collapsible inputs
 [ ] Add CSS to inputs
 [ ] Add CSS to tabs bar
-[ ] Move bin button to top right of boxes
-[ ] Make bin button not appear on first 4
 [ ] Give the option of a mixed relay
-[ ] Change Name prediction (Nathan vs Jonathan)
+[ ] Rethink user input (more than 5 of the same name)
 [ ] Remove club user input?
 [ ] Fix scaling of boxes with autofill
 

@@ -94,17 +94,21 @@
           </div>
           <div id= "ASA" class="tabcontent" style="display: block;">
             <p>Insert the ASA numbers for each swimmer into the boxes below</p>
-            <div id="filter-bar">
-              <input type="text" id="filter-club" placeholder="Club name">
-              <div id="autocomplete-club"></div>
-              <select id="filter-gender" placeholder>
-                <option value="">All</option>
-                <option value="Open/Male">Open/Male</option>
-                <option value="Female">Female</option>
-              </select>
-              <input type="number" id ="filter-age-min" placeholder="Min age">
-              <input type="number" id ="filter-age-max" placeholder="Max age">
-              <button id="apply-filters">Apply</button>
+            <div class = "filter-bar" id="filter-bar">
+              <div class="club-input-wrapper">
+                <input type="text" id="filter-club" placeholder="Enter Club Name..."/>
+                <div id="autocomplete-club"></div>
+              </div>            
+              <div class="filter-row">
+                <select id="filter-gender" placeholder>
+                  <option value="">All</option>
+                  <option value="Open/Male">Open/Male</option>
+                  <option value="Female">Female</option>
+                </select>
+                <input type="number" id ="filter-age-min" placeholder="Min age">
+                <input type="number" id ="filter-age-max" placeholder="Max age">
+                <button id="apply-filters">Apply</button>
+              </div>
             </div>
             <form
               action="/submit"
