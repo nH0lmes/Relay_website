@@ -35,6 +35,7 @@ function addSwimmerBox(containerId) {
   const input_asa = document.createElement("input");
   input_asa.type = "text";
   input_asa.inputMode = "numeric";
+  input_asa.placeholder = "Enter ASA Number";
   input_asa.id = `asa-number${nameCount}`;
   input_asa.name = `asa-number${nameCount}`;
 
@@ -90,6 +91,39 @@ function addSwimmerBox(containerId) {
   setupAutocomplete(input_name);
   updateDeleteButtons();
   return wrapper;
+}
+function collapseSwimmerBoxes(wrapper) {
+  const name = wrapper.querySelector("input[name^='name']").value.trim();
+  const asa = wrapper.querySelector("input[name^='asa-number']").value.trim();
+  const club = wrapper.querySelector("input[name^='club']").value.trim();
+
+  wrapper
+    .querySelectorAll(".form-input")
+    .forEach((div) => (div.style.display = "none"));
+
+  const summary = document.createElement("div");
+  summary.className = "collapsed-summary";
+  const line1 = document.createElement("div");
+  line1.textContent = `${name} - ${asa}`;
+
+  const line2 = document.createElement("div");
+  line2.textContent = club;
+  summary.append(line1, line2);
+
+  wrapper.insertBefore(summary, wrapper.querySelector(".delete-button"));
+
+  const editBtn = document.createElement("i");
+  editBtn.className = "fa-solid fa-pen-to-square edit-button";
+
+  editBtn.addEventListener("click", () => {
+    summary.remove();
+    editBtn.remove();
+    wrapper
+      .querySelectorAll(".form-input")
+      .forEach((div) => (div.style.display = ""));
+  });
+
+  wrapper.insertBefore(editBtn, wrapper.querySelector(".delete-button"));
 }
 
 function reindexSwimmerBoxes(containerId) {
@@ -267,6 +301,7 @@ function openSite(evt, siteName) {
 clubSearchInput = document.getElementById("filter-club");
 clubSearchInput.addEventListener("input", async () => {
   const resultBox = document.getElementById("autocomplete-club");
+  resultBox.classList.add("open-autocomplete");
   const query = clubSearchInput.value.trim();
   if (!query) return (resultBox.innerHTML = "");
 
@@ -282,6 +317,7 @@ clubSearchInput.addEventListener("input", async () => {
     item.textContent = club.club;
     item.addEventListener("click", () => {
       clubSearchInput.value = club.club;
+      resultBox.classList.remove("open-autocomplete");
       resultBox.innerHTML = "";
     });
     resultBox.appendChild(item);
@@ -297,6 +333,7 @@ function setupAutocomplete(searchInput) {
   const clubInput = document.getElementById(`club${idSuffix}`);
 
   searchInput.addEventListener("input", async () => {
+    resultBox.classList.add("open-autocomplete");
     const query = searchInput.value.trim();
     if (!query) return (resultBox.innerHTML = "");
 
@@ -314,12 +351,29 @@ function setupAutocomplete(searchInput) {
         asaInput.value = swimmer.asa_number;
         clubInput.value = swimmer.club;
         resultBox.innerHTML = "";
+        resultBox.classList.remove("open-autocomplete");
+        collapseSwimmerBoxes(searchInput.closest(".individual-input"));
       });
       resultBox.appendChild(item);
     });
+    if (resultBox.children.length == 0) {
+      resultBox.style.display = "none";
+    } else {
+      resultBox.style.display = "block";
+    }
   });
 }
 document.querySelectorAll(".search-input").forEach(setupAutocomplete);
+document.addEventListener("click", function (event) {
+  document.querySelectorAll(".open-autocomplete").forEach((box) => {
+    const input = box.previousElementSibling; // assumes input precedes box
+    if (!box.contains(event.target) && !input.contains(event.target)) {
+      box.innerHTML = "";
+      box.style.display = "none";
+      box.classList.remove("open-autocomplete");
+    }
+  });
+});
 
 document.getElementById("apply-filters").addEventListener("click", async () => {
   const club = document.getElementById("filter-club").value.trim();
@@ -354,6 +408,7 @@ document.getElementById("apply-filters").addEventListener("click", async () => {
       nameInput.value = `${swimmer.first_name} ${swimmer.last_name}`;
     if (asaInput) asaInput.value = swimmer.asa_number;
     if (clubInput) clubInput.value = swimmer.club;
+    collapseSwimmerBoxes(wrapper);
 
     await setupAutocomplete(wrapper);
   });
