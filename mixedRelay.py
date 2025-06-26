@@ -14,38 +14,11 @@ from typing import Optional
 import datetime
 from itertools import combinations
 
+input_array = [['1117232', 'Open/Male'], ['1110066', 'Female'], ['1176991', 'Female'], ['883467', 'Female'], ['928301', 'Open/Male'], ['1235650', 'Open/Male'], ['1265722', 'Open/Male'], ['1117053', 'Open/Male'], ['1167903', 'Open/Male'], ['1160296', 'Open/Male'], ['930673', 'Open/Male'], ['1165975', 'Open/Male'], ['810206', 'Female'], ['1338910', 'Open/Male']]
 
-
-app = FastAPI()
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=['*'],  
-    allow_credentials=True,
-    allow_methods=['*'], 
-    allow_headers=['*'], 
-)
-
-# Define the request body model
-class InputData(BaseModel):
-    array: list[list[str]]
-    courseType: str
-    pool_length: str
-    target_gender: str
-
-# Create an endpoint
-@app.post("/run-function/")
-async def run_function(data: InputData):
-    try:
-        print("Received data:",data.array)
-        print("Gender:",data.target_gender)
-        result = your_function(data.array,data.courseType,data.pool_length,data.target_gender)
-        return {"result": result}
-    except Exception as e:
-        print("Error in processing:", str(e))
-        raise HTTPException(status_code=400, detail=str(e))
-
-def your_function(input_array,course,pool_length,target_gender):
+def your_function(input_array,course,pool_length):
     n=1
+    gender = "Mixed"
     def swim_cloud(sc_number):
         event_template  = pd.read_csv("D:/Personal/Real Website V2/Events-template.csv")
         url = f'https://www.swimcloud.com/swimmer/{sc_number}/'
@@ -151,15 +124,13 @@ def your_function(input_array,course,pool_length,target_gender):
     genders = []
     names= []
     matrix = []
-    def matrix_creator(gender):
-        for number in numbers:
-            if gender != "Mixed" and number[1] != gender:
-                continue
-            num = number[0]
-            name,row = matrix_input(num,medley)
-            names.append((name,number[1]))
-            genders.append(number[1])
-            matrix.append(row)    
+    
+    for number in numbers:
+        num = number[0]
+        name,row = matrix_input(num,medley)
+        names.append((name,number[1]))
+        genders.append(number[1])
+        matrix.append(row)    
     print(names)
     print(genders)
     def time_conversion(t):
@@ -182,30 +153,8 @@ def your_function(input_array,course,pool_length,target_gender):
         minutes, ms = divmod(ms,60000)
         seconds,ms = divmod(ms,1000)
         return f'{minutes}:{seconds:02}.{ms // 10:02}' if minutes > 0 else f'{seconds}.{ms // 10:02}'
-
-    converted = [[time_conversion(ti)for ti in row] for row in matrix]
-    print(converted)
-    print(names)
-    def not_mixed(gender):
-        matrix_creator(gender)
-        converted = [[time_conversion(ti)for ti in row] for row in matrix]
-        m = Munkres()
-        indexes = m.compute(converted)
-        print (indexes)
-        output_array =  []
-        total = 0
-        for row, column in indexes:
-            value = converted[row][column]
-            total += value
-            original_value = matrix[row][column]
-            row_name = names[row][0]
-            column_name = strokes[column]
-            output_array.append( [column_name,row_name,original_value])
-        sorted_array = sorted(output_array,key = lambda x:x[0])
-        sorted_array.append(["Total Time:",reverse_conversion(total)])
-        return sorted_array
-    def mixedRelay(gender):
-        matrix_creator(gender)
+    
+    def mixedRelay():
         def valid_gender_combo(combo):
             genders = [gender for name, gender in combo]
             return genders.count('Open/Male') == 2 and genders.count('Female') == 2
@@ -245,123 +194,8 @@ def your_function(input_array,course,pool_length,target_gender):
         sorted_array = sorted(output_array,key = lambda x:x[0])
         sorted_array.append(["Total Time:",reverse_conversion(total)])
         return(sorted_array)
-    if target_gender == "Mixed":
-        sorted_array = mixedRelay("Mixed")
-    elif target_gender == "Open/Male":
-        sorted_array = not_mixed("Open/Male")
-    elif target_gender == "Female":
-        sorted_array = not_mixed("Female")
-    return(sorted_array)
+    if gender == "Mixed":
+        sorted_array = mixedRelay()
+    print(sorted_array)
 
-@app.get("/search")
-async def search_swimmers(q: str = Query( ..., min_length=1)):
-    conn = await asyncpg.connect(
-    database = "relay_website",
-    user = "postgres",
-    password = "Holmesy0804!",
-    host = "localhost",
-    port=5432
-    )
-    query_prefix = f"{q.lower()}%"
-    query_loose = f"%{q.lower()}%"
-
-    # Tier 1: Prefix match
-    rows = await conn.fetch(
-        """
-        SELECT first_name, last_name, asa_number, club, gender
-        FROM swimmers
-        WHERE lower(first_name) LIKE $1
-           OR lower(first_name || ' ' || last_name) LIKE $1
-        LIMIT 5
-        """,
-        query_prefix
-    )
-
-    # Tier 2: Partial match
-    if not rows:
-        rows = await conn.fetch(
-            """
-            SELECT first_name, last_name, asa_number, club, gender
-            FROM swimmers
-            WHERE lower(first_name || ' ' || last_name) LIKE $1
-            LIMIT 5
-            """,
-            query_loose
-        )
-
-    # Tier 3: Fuzzy match
-    if not rows:
-        await conn.execute("SET pg_trgm.similarity_threshold = 0.3;")  # Tweak as needed
-        rows = await conn.fetch(
-            """
-            SELECT first_name, last_name, asa_number, club, gender
-            FROM swimmers
-            WHERE similarity(lower(first_name || ' ' || last_name), $1) > 0.3
-            ORDER BY similarity(lower(first_name || ' ' || last_name), $1) DESC
-            LIMIT 5
-            """,
-            q.lower()
-        )
-
-    await conn.close()
-    return [dict(row) for row in rows]
-
-@app.get("/search-clubs")
-async def search_swimmers(q: str = Query( ..., min_length=1)):
-    conn = await asyncpg.connect(
-    database = "relay_website",
-    user = "postgres",
-    password = "Holmesy0804!",
-    host = "localhost",
-    port=5432
-    )
-    rows = await conn.fetch(
-        """
-        SELECT DISTINCT club
-        FROM swimmers
-        WHERE lower(club) LIKE '%' || lower($1) || '%'
-        LIMIT 5
-        """,
-        f"%{q}%"
-    )
-    await conn.close()
-    return [dict(row) for row in rows]
-
-@app.get("/filter-swimmers")
-async def filter_swimmers(
-    club: Optional[str] = None,
-    gender: Optional[str] = None,
-    min_age: Optional[int] = None,
-    max_age: Optional[int] = None
-
-):
-    current_year = datetime.datetime.now().year
-    
-    min_year = current_year - max_age
-    max_year = current_year - min_age
-    query = """
-        SELECT first_name,last_name,asa_number,club, gender
-        FROM swimmers
-        WHERE ($1::text IS NULL OR LOWER(club) LIKE LOWER($1))
-          AND ($2::text = '' OR gender = $2)
-          AND ($3::int IS NULL OR yob >= $3)
-          AND ($4::int IS NULL OR yob <= $4)
-        LIMIT 100
-    """
-    conn = await asyncpg.connect(
-    database = "relay_website",
-    user = "postgres",
-    password = "Holmesy0804!",
-    host = "localhost",
-    port=5432
-    )
-    rows = await conn.fetch(query, f"%{club}%", gender, min_year, max_year)
-    await conn.close()
-    swimmers = [dict(row) for row in rows]
-    sorted_swimmers = sorted(swimmers, key=lambda x: x['first_name'])
-    print(rows)
-    return sorted_swimmers
-
-if __name__ == "__main__":
-    import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=5000,log_level="info")
+your_function(input_array, course='long', pool_length='50')

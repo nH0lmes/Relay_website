@@ -60,6 +60,11 @@ function addSwimmerBox(containerId) {
   autocomplete.id = `autocomplete-list${nameCount}`;
   autocomplete.className = "autocomplete-items";
 
+  const gender = document.createElement("div");
+  gender.id = `gender${nameCount}`;
+  const genderValue = document.createElement("div");
+  genderValue.id = `gender${nameCount}-value`;
+  gender.append(genderValue);
   name.append(label_name, input_name, autocomplete);
 
   const club = document.createElement("div");
@@ -85,7 +90,7 @@ function addSwimmerBox(containerId) {
     reindexSwimmerBoxes(containerId);
   });
 
-  wrapper.append(header, name, asa_num, club, deleteButton);
+  wrapper.append(header, name, asa_num, club, deleteButton, gender);
 
   container.appendChild(wrapper);
   setupAutocomplete(input_name);
@@ -184,18 +189,22 @@ document.querySelectorAll(".form-container").forEach((form) => {
 
     let course = form.querySelector('input[name="course-type"]:checked');
     let poolLength = form.querySelector("input[name=pool-length]:checked");
+    let targetGender = form.querySelector("input[name=gender]:checked");
     nameCount = form.querySelectorAll(".individual-input").length;
     if (course != null) {
       let swimmer_list = [];
       for (let i = 1; i <= nameCount; i++) {
         const swimmer = form.querySelector(`#asa-number${i}`).value;
-        swimmer_list.push(swimmer);
+        const gender = form.querySelector(`#gender${i}`).textContent;
+        console.log([swimmer, gender]);
+        swimmer_list.push([swimmer, gender]);
       }
       try {
         let swimmer_list2 = await runPython(
           swimmer_list,
           course.value,
-          poolLength.value
+          poolLength.value,
+          targetGender.value
         );
         if (swimmer_list2) {
           tbl_create(swimmer_list2); // Proceed only if there's no error
@@ -214,11 +223,12 @@ document.querySelectorAll(".form-container").forEach((form) => {
   });
 });
 /*Loading Spinner*/
-async function runPython(swimmer_array, course, poolLength) {
+async function runPython(swimmer_array, course, poolLength, targetGender) {
   const sentData = {
     array: swimmer_array,
     courseType: course,
     pool_length: poolLength,
+    target_gender: targetGender,
   };
   const response = await fetch("http://127.0.0.1:5000/run-function/", {
     method: "POST",
@@ -331,6 +341,7 @@ function setupAutocomplete(searchInput) {
   const resultBox = document.getElementById(`autocomplete-list${idSuffix}`);
   const asaInput = document.getElementById(`asa-number${idSuffix}`);
   const clubInput = document.getElementById(`club${idSuffix}`);
+  const genderInput = document.getElementById(`gender${idSuffix}-value`);
 
   searchInput.addEventListener("input", async () => {
     resultBox.classList.add("open-autocomplete");
@@ -350,6 +361,7 @@ function setupAutocomplete(searchInput) {
         searchInput.value = `${swimmer.first_name} ${swimmer.last_name}`;
         asaInput.value = swimmer.asa_number;
         clubInput.value = swimmer.club;
+        genderInput.textContent = `${swimmer.gender}`;
         resultBox.innerHTML = "";
         resultBox.classList.remove("open-autocomplete");
         collapseSwimmerBoxes(searchInput.closest(".individual-input"));
@@ -403,11 +415,14 @@ document.getElementById("apply-filters").addEventListener("click", async () => {
     const nameInput = wrapper.querySelector("input[id^='name']");
     const asaInput = wrapper.querySelector("input[id^='asa-number']");
     const clubInput = wrapper.querySelector("input[id^='club']");
+    const genderInput = wrapper.querySelector(`div[id='gender${num}-value']`);
 
     if (nameInput)
       nameInput.value = `${swimmer.first_name} ${swimmer.last_name}`;
     if (asaInput) asaInput.value = swimmer.asa_number;
     if (clubInput) clubInput.value = swimmer.club;
+    if (genderInput) genderInput.textContent = swimmer.gender;
+    if (genderInput) console.log(genderInput.textContent);
     collapseSwimmerBoxes(wrapper);
 
     await setupAutocomplete(wrapper);
