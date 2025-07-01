@@ -254,7 +254,7 @@ def your_function(input_array,course,pool_length,target_gender):
     return(sorted_array)
 
 @app.get("/search")
-async def search_swimmers(q: str = Query( ..., min_length=1)):
+async def search_swimmers(q: str = Query( ..., min_length=1),club: str = Query(None)):
     conn = await asyncpg.connect(
     database = "relay_website",
     user = "postgres",
@@ -262,46 +262,48 @@ async def search_swimmers(q: str = Query( ..., min_length=1)):
     host = "localhost",
     port=5432
     )
+    print(q)
+    print(club)
     query_prefix = f"{q.lower()}%"
     query_loose = f"%{q.lower()}%"
-
     # Tier 1: Prefix match
     rows = await conn.fetch(
         """
         SELECT first_name, last_name, asa_number, club, gender
         FROM swimmers
-        WHERE lower(first_name) LIKE $1
-           OR lower(first_name || ' ' || last_name) LIKE $1
+        WHERE (lower(first_name) LIKE $1
+           OR lower(first_name || ' ' || last_name) LIKE $1)
+           AND ($2::text IS NULL OR lower(club) LIKE lower($2))
         LIMIT 5
         """,
-        query_prefix
+        query_prefix,club if club else None
     )
 
     # Tier 2: Partial match
-    if not rows:
-        rows = await conn.fetch(
-            """
-            SELECT first_name, last_name, asa_number, club, gender
-            FROM swimmers
-            WHERE lower(first_name || ' ' || last_name) LIKE $1
-            LIMIT 5
-            """,
-            query_loose
-        )
+    # if not rows:
+    #     rows = await conn.fetch(
+    #         """
+    #         SELECT first_name, last_name, asa_number, club, gender
+    #         FROM swimmers
+    #         WHERE lower(first_name || ' ' || last_name) LIKE $1
+    #         LIMIT 5
+    #         """,
+    #         query_loose
+    #     )
 
-    # Tier 3: Fuzzy match
-    if not rows:
-        await conn.execute("SET pg_trgm.similarity_threshold = 0.3;")  # Tweak as needed
-        rows = await conn.fetch(
-            """
-            SELECT first_name, last_name, asa_number, club, gender
-            FROM swimmers
-            WHERE similarity(lower(first_name || ' ' || last_name), $1) > 0.3
-            ORDER BY similarity(lower(first_name || ' ' || last_name), $1) DESC
-            LIMIT 5
-            """,
-            q.lower()
-        )
+    # # Tier 3: Fuzzy match
+    # if not rows:
+    #     await conn.execute("SET pg_trgm.similarity_threshold = 0.3;")  # Tweak as needed
+    #     rows = await conn.fetch(
+    #         """
+    #         SELECT first_name, last_name, asa_number, club, gender
+    #         FROM swimmers
+    #         WHERE similarity(lower(first_name || ' ' || last_name), $1) > 0.3
+    #         ORDER BY similarity(lower(first_name || ' ' || last_name), $1) DESC
+    #         LIMIT 5
+    #         """,
+    #         q.lower()
+    #     )
 
     await conn.close()
     return [dict(row) for row in rows]

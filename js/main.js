@@ -69,6 +69,7 @@ function addSwimmerBox(containerId) {
 
   const club = document.createElement("div");
   club.className = "form-input";
+  club.id = `club-input-wrapper${nameCount}`;
 
   const label_club = document.createElement("label");
   label_club.setAttribute("for", `club${nameCount}`);
@@ -80,7 +81,11 @@ function addSwimmerBox(containerId) {
   input_club.id = `club${nameCount}`;
   input_club.name = `club${nameCount}`;
 
-  club.append(label_club, input_club);
+  const autocomplete_club = document.createElement("div");
+  autocomplete_club.id = `autocomplete-club${nameCount}`;
+  autocomplete_club.className = "autocomplete-club";
+
+  club.append(label_club, input_club, autocomplete_club);
 
   const deleteButton = document.createElement("i");
   deleteButton.className = "delete-button fa-solid fa-trash";
@@ -90,10 +95,11 @@ function addSwimmerBox(containerId) {
     reindexSwimmerBoxes(containerId);
   });
 
-  wrapper.append(header, name, asa_num, club, deleteButton, gender);
+  wrapper.append(header, name, club, asa_num, deleteButton, gender);
 
   container.appendChild(wrapper);
   setupAutocomplete(input_name);
+  clubFilter(club);
   updateDeleteButtons();
   return wrapper;
 }
@@ -308,31 +314,36 @@ function openSite(evt, siteName) {
   document.getElementById(siteName).style.display = "block";
   evt.currentTarget.className += "active";
 }
-clubSearchInput = document.getElementById("filter-club");
-clubSearchInput.addEventListener("input", async () => {
-  const resultBox = document.getElementById("autocomplete-club");
-  resultBox.classList.add("open-autocomplete");
-  const query = clubSearchInput.value.trim();
-  if (!query) return (resultBox.innerHTML = "");
 
-  const res = await fetch(
-    "http://localhost:5000/search-clubs?q=" + encodeURIComponent(query)
-  );
-  const suggestions = await res.json();
+function clubFilter(wrapper) {
+  const input = wrapper.querySelector("input[type='text']");
+  const resultBox = wrapper.querySelector(".autocomplete-club");
+  input.addEventListener("input", async () => {
+    resultBox.classList.add("open-autocomplete");
+    const query = input.value.trim();
+    if (!query) return (resultBox.innerHTML = "");
 
-  resultBox.innerHTML = "";
-  console.log(suggestions);
-  suggestions.forEach((club) => {
-    const item = document.createElement("div");
-    item.textContent = club.club;
-    item.addEventListener("click", () => {
-      clubSearchInput.value = club.club;
-      resultBox.classList.remove("open-autocomplete");
-      resultBox.innerHTML = "";
+    const res = await fetch(
+      "http://localhost:5000/search-clubs?q=" + encodeURIComponent(query)
+    );
+    const suggestions = await res.json();
+
+    resultBox.innerHTML = "";
+    console.log(suggestions);
+    suggestions.forEach((club) => {
+      const item = document.createElement("div");
+      item.textContent = club.club;
+      item.addEventListener("click", () => {
+        input.value = club.club;
+        resultBox.classList.remove("open-autocomplete");
+        resultBox.innerHTML = "";
+      });
+      resultBox.appendChild(item);
     });
-    resultBox.appendChild(item);
   });
-});
+}
+clubSearchInput = document.getElementById("club-input-wrapper0");
+clubFilter(clubSearchInput);
 
 function setupAutocomplete(searchInput) {
   const idSuffix = searchInput.id.match(/\d+$/)?.[0];
@@ -346,10 +357,12 @@ function setupAutocomplete(searchInput) {
   searchInput.addEventListener("input", async () => {
     resultBox.classList.add("open-autocomplete");
     const query = searchInput.value.trim();
+    const club = clubInput.value.trim();
     if (!query) return (resultBox.innerHTML = "");
 
     const res = await fetch(
-      "http://localhost:5000/search?q=" + encodeURIComponent(query)
+      "http://localhost:5000/search?" +
+        new URLSearchParams({ q: query, club: club })
     );
     const suggestions = await res.json();
 
@@ -381,7 +394,6 @@ document.addEventListener("click", function (event) {
     const input = box.previousElementSibling; // assumes input precedes box
     if (!box.contains(event.target) && !input.contains(event.target)) {
       box.innerHTML = "";
-      box.style.display = "none";
       box.classList.remove("open-autocomplete");
     }
   });

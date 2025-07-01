@@ -186,7 +186,7 @@ img {
   box-sizing: border-box;
 }
 .autocomplete-items,
-#autocomplete-club {
+.autocomplete-club {
   position: absolute;
   left: 0;
   width: 100%;
@@ -198,7 +198,7 @@ img {
   box-shadow: none;
 }
 .autocomplete-items,
-#autocomplete-club div {
+.autocomplete-club div {
   padding: 8px;
   cursor: pointer;
   transition: 0.2s;
@@ -206,8 +206,8 @@ img {
 }
 .autocomplete-items div:hover,
 .autocomplete-items div.active,
-#autocomplete-club div:hover,
-#autocomplete-club div.active {
+.autocomplete-club div:hover,
+.autocomplete-club div.active {
   background-color: #f0f0f0;
 }
 .filter-row {
