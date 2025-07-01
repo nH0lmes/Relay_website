@@ -306,26 +306,101 @@ async def search_swimmers(q: str = Query( ..., min_length=1)):
     await conn.close()
     return [dict(row) for row in rows]
 
+# @app.get("/search-clubs")
+# async def search_swimmers(q: str = Query( ..., min_length=1)):
+#     conn = await asyncpg.connect(
+#     database = "relay_website",
+#     user = "postgres",
+#     password = "Holmesy0804!",
+#     host = "localhost",
+#     port=5432
+#     )
+#     rows = await conn.fetch(
+#         """
+#         SELECT DISTINCT club
+#         FROM swimmers
+#         WHERE lower(club) LIKE '%' || lower($1) || '%'
+#         LIMIT 5
+#         """,
+#         f"%{q}%"
+#     )
+#     await conn.close()
+#     return [dict(row) for row in rows]
 @app.get("/search-clubs")
-async def search_swimmers(q: str = Query( ..., min_length=1)):
+async def search_clubs(q: str = Query(..., min_length=1)):
     conn = await asyncpg.connect(
-    database = "relay_website",
-    user = "postgres",
-    password = "Holmesy0804!",
-    host = "localhost",
-    port=5432
+        database="relay_website",
+        user="postgres",
+        password="Holmesy0804!",
+        host="localhost",
+        port=5432
     )
-    rows = await conn.fetch(
+
+    query_prefix = f"{q.lower()}%"
+    query_loose = f"%{q.lower()}%"
+
+    seen = set()
+    final_results = []
+
+    # Tier 1: Prefix match
+    tier1 = await conn.fetch(
         """
         SELECT DISTINCT club
         FROM swimmers
-        WHERE lower(club) LIKE '%' || lower($1) || '%'
+        WHERE lower(club) LIKE $1
         LIMIT 5
         """,
-        f"%{q}%"
+        query_prefix
     )
+    for row in tier1:
+        club = row["club"]
+        if club not in seen:
+            seen.add(club)
+            final_results.append(row)
+
+    # Tier 2: Loose/Partial match
+    if len(final_results) < 5:
+        tier2 = await conn.fetch(
+            """
+            SELECT DISTINCT club
+            FROM swimmers
+            WHERE lower(club) LIKE $1
+            LIMIT 5
+            """,
+            query_loose
+        )
+        for row in tier2:
+            club = row["club"]
+            if club not in seen:
+                seen.add(club)
+                final_results.append(row)
+            if len(final_results) >= 5:
+                break
+
+    # Tier 3: Fuzzy match using pg_trgm
+    if len(final_results) < 5:
+        await conn.execute("SET pg_trgm.similarity_threshold = 0.3;")  # adjust as needed
+        tier3 = await conn.fetch(
+            """
+            SELECT DISTINCT club, similarity(lower(club), $1) AS sim
+            FROM swimmers
+            WHERE similarity(lower(club), $1) > 0.5
+            ORDER BY sim DESC
+            LIMIT 10
+            """,
+            q.lower()
+        )
+        for row in tier3:
+            club = row["club"]
+            if club not in seen:
+                seen.add(club)
+                final_results.append(row)
+            if len(final_results) >= 5:
+                break
+
     await conn.close()
-    return [dict(row) for row in rows]
+    return [dict(row) for row in final_results]
+
 
 @app.get("/filter-swimmers")
 async def filter_swimmers(
