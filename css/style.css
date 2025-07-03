@@ -453,7 +453,9 @@ input[type="radio"]:hover + label::before {
 .buttons-container > * {
   margin-left: 5px;
 }
-
+.hidden {
+  display: none;
+}
 /*Table*/
 .spinner {
   display: none;

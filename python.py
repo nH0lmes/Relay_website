@@ -279,55 +279,35 @@ async def search_swimmers(q: str = Query( ..., min_length=1),club: str = Query(N
         query_prefix,club if club else None
     )
 
-    # Tier 2: Partial match
-    # if not rows:
-    #     rows = await conn.fetch(
-    #         """
-    #         SELECT first_name, last_name, asa_number, club, gender
-    #         FROM swimmers
-    #         WHERE lower(first_name || ' ' || last_name) LIKE $1
-    #         LIMIT 5
-    #         """,
-    #         query_loose
-    #     )
+    #Tier 2: Partial match
+    if not rows:
+        rows = await conn.fetch(
+            """
+            SELECT first_name, last_name, asa_number, club, gender
+            FROM swimmers
+            WHERE lower(first_name || ' ' || last_name) LIKE $1
+            LIMIT 5
+            """,
+            query_loose
+        )
 
-    # # Tier 3: Fuzzy match
-    # if not rows:
-    #     await conn.execute("SET pg_trgm.similarity_threshold = 0.3;")  # Tweak as needed
-    #     rows = await conn.fetch(
-    #         """
-    #         SELECT first_name, last_name, asa_number, club, gender
-    #         FROM swimmers
-    #         WHERE similarity(lower(first_name || ' ' || last_name), $1) > 0.3
-    #         ORDER BY similarity(lower(first_name || ' ' || last_name), $1) DESC
-    #         LIMIT 5
-    #         """,
-    #         q.lower()
-    #     )
+    # Tier 3: Fuzzy match
+    if not rows:
+        await conn.execute("SET pg_trgm.similarity_threshold = 0.3;")  # Tweak as needed
+        rows = await conn.fetch(
+            """
+            SELECT first_name, last_name, asa_number, club, gender
+            FROM swimmers
+            WHERE similarity(lower(first_name || ' ' || last_name), $1) > 0.3
+            ORDER BY similarity(lower(first_name || ' ' || last_name), $1) DESC
+            LIMIT 5
+            """,
+            q.lower()
+        )
 
     await conn.close()
     return [dict(row) for row in rows]
 
-# @app.get("/search-clubs")
-# async def search_swimmers(q: str = Query( ..., min_length=1)):
-#     conn = await asyncpg.connect(
-#     database = "relay_website",
-#     user = "postgres",
-#     password = "Holmesy0804!",
-#     host = "localhost",
-#     port=5432
-#     )
-#     rows = await conn.fetch(
-#         """
-#         SELECT DISTINCT club
-#         FROM swimmers
-#         WHERE lower(club) LIKE '%' || lower($1) || '%'
-#         LIMIT 5
-#         """,
-#         f"%{q}%"
-#     )
-#     await conn.close()
-#     return [dict(row) for row in rows]
 @app.get("/search-clubs")
 async def search_clubs(q: str = Query(..., min_length=1)):
     conn = await asyncpg.connect(

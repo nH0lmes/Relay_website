@@ -140,38 +140,70 @@ function collapseSwimmerBoxes(wrapper) {
 function reindexSwimmerBoxes(containerId) {
   const container = document.getElementById(containerId);
   const swimmerBoxes = container.querySelectorAll(".individual-input");
-  const deleteButtons = container.querySelectorAll(".btn-delete");
 
   swimmerBoxes.forEach((box, index) => {
     const newIndex = index + 1;
     box.dataset.index = newIndex;
 
+    // Header
     const header = box.querySelector("h2");
-    header.textContent = `Swimmer ${newIndex}`;
+    if (header) header.textContent = `Swimmer ${newIndex}`;
 
+    // ASA Number
     const asaInput = box.querySelector("input[id^='asa-number']");
     const asaLabel = box.querySelector("label[for^='asa-number']");
-    asaInput.id = `asa-number${newIndex}`;
-    asaInput.name = `asa-number${newIndex}`;
+    if (asaInput) {
+      asaInput.id = `asa-number${newIndex}`;
+      asaInput.name = `asa-number${newIndex}`;
+    }
+    if (asaLabel) {
+      asaLabel.setAttribute("for", `asa-number${newIndex}`);
+    }
 
+    // Name
     const nameInput = box.querySelector("input[id^='name']");
     const nameLabel = box.querySelector("label[for^='name']");
-    nameInput.id = `name${newIndex}`;
-    nameInput.name = `name${newIndex}`;
-    nameLabel.setAttribute("for", `name${newIndex}`);
+    const autocomplete = box.querySelector("div[id^='autocomplete-list']");
+    if (nameInput) {
+      nameInput.id = `name${newIndex}`;
+      nameInput.name = `name${newIndex}`;
+    }
+    if (nameLabel) {
+      nameLabel.setAttribute("for", `name${newIndex}`);
+    }
+    if (autocomplete) {
+      autocomplete.id = `autocomplete-list${newIndex}`;
+    }
 
+    // Club
     const clubInput = box.querySelector("input[id^='club']");
     const clubLabel = box.querySelector("label[for^='club']");
-    clubInput.id = `club${newIndex}`;
-    clubInput.name = `club${newIndex}`;
-    clubLabel.setAttribute("for", `club${newIndex}`);
+    const autocompleteClub = box.querySelector("div[id^='autocomplete-club']");
+    const clubWrapper = box.querySelector("div[id^='club-input-wrapper']");
+    if (clubInput) {
+      clubInput.id = `club${newIndex}`;
+      clubInput.name = `club${newIndex}`;
+    }
+    if (clubLabel) {
+      clubLabel.setAttribute("for", `club${newIndex}`);
+    }
+    if (autocompleteClub) {
+      autocompleteClub.id = `autocomplete-club${newIndex}`;
+    }
+    if (clubWrapper) {
+      clubWrapper.id = `club-input-wrapper${newIndex}`;
+    }
+
+    // Gender
+    const gender = box.querySelector("div[id^='gender']");
+    const genderValue = box.querySelector("div[id^='gender'][id$='-value']");
+    if (gender) gender.id = `gender${newIndex}`;
+    if (genderValue) genderValue.id = `gender${newIndex}-value`;
   });
 
-  deleteButtons.forEach((container, index) => {
-    const newIndex = index + 1;
-    container.dataset.index = newIndex;
-  });
+  // Update global count if needed
   nameCount = swimmerBoxes.length;
+
   updateDeleteButtons();
 }
 function updateDeleteButtons() {
@@ -196,38 +228,100 @@ document.querySelectorAll(".form-container").forEach((form) => {
     let course = form.querySelector('input[name="course-type"]:checked');
     let poolLength = form.querySelector("input[name=pool-length]:checked");
     let targetGender = form.querySelector("input[name=gender]:checked");
+    let male = 0;
+    let female = 0;
+
+    let warningBox = document.getElementById("team-warning");
+    warningBox.classList.add("hidden");
     nameCount = form.querySelectorAll(".individual-input").length;
-    if (course != null) {
+    if (course != null && poolLength != null && targetGender != null) {
       let swimmer_list = [];
+      let male = 0;
+      let female = 0;
       for (let i = 1; i <= nameCount; i++) {
         const swimmer = form.querySelector(`#asa-number${i}`).value;
         const gender = form.querySelector(`#gender${i}`).textContent;
+        if (gender == "Open/Male") {
+          male += 1;
+        } else if (gender == "Female") {
+          female += 1;
+        }
         console.log([swimmer, gender]);
+        console.log(female);
         swimmer_list.push([swimmer, gender]);
       }
-      try {
-        let swimmer_list2 = await runPython(
-          swimmer_list,
-          course.value,
-          poolLength.value,
-          targetGender.value
-        );
-        if (swimmer_list2) {
-          tbl_create(swimmer_list2); // Proceed only if there's no error
-        } else {
-          console.error("Failed to create the table due to an error.");
+
+      if (swimmerChecker(male, female, warningBox, targetGender)) {
+        try {
+          let swimmer_list2 = await runPython(
+            swimmer_list,
+            course.value,
+            poolLength.value,
+            targetGender.value
+          );
+          if (swimmer_list2) {
+            tbl_create(swimmer_list2); // Proceed only if there's no error
+          } else {
+            console.error("Failed to create the table due to an error.");
+          }
+        } catch (error) {
+          console.error("error occured:", error);
+        } finally {
+          spinner.style.display = "none";
         }
-      } catch (error) {
-        console.error("error occured:", error);
-      } finally {
+      } else {
         spinner.style.display = "none";
       }
     } else {
-      console.error("No boxes checked");
       spinner.style.display = "none";
+      radioChecker(warningBox, course, poolLength, targetGender);
     }
   });
 });
+
+function swimmerChecker(male, female, warningBox, targetGender) {
+  const genderRules = [
+    { type: "Mixed", required: 2, count: male, label: "males" },
+    { type: "Open/Male", required: 4, count: male, label: "males" },
+    { type: "Mixed", required: 2, count: female, label: "females" },
+    { type: "Female", required: 4, count: female, label: "females" },
+  ];
+
+  const match = genderRules.find(
+    (rule) => targetGender.value === rule.type && rule.count < rule.required
+  );
+
+  if (match) {
+    const diff = match.required - match.count;
+    const label = diff === 1 ? match.label.slice(0, -1) : match.label;
+
+    warningBox.classList.remove("hidden");
+    warningBox.innerHTML = `<div>WARNING: Not enough ${match.label} selected</div
+                            <div>Add ${diff} more ${label} or switch category</div>`;
+    console.log(`Not enough ${match.label} selected`);
+    return false;
+  } else {
+    warningBox.classList.add("hidden");
+    warningBox.innerHTML = "";
+    return true;
+  }
+}
+
+function radioChecker(warningBox, course, poolLength, genderTarget) {
+  const checks = [
+    { value: course, message: "No course type selected" },
+    { value: poolLength, message: "No pool length selected" },
+    { value: genderTarget, message: "No gender selected" },
+  ];
+
+  const missing = checks.find((check) => check.value == null);
+
+  if (missing) {
+    warningBox.classList.remove("hidden");
+    warningBox.innerHTML = `<div>WARNING: ${missing.message}</div>`;
+  }
+}
+
 /*Loading Spinner*/
 async function runPython(swimmer_array, course, poolLength, targetGender) {
   const sentData = {
