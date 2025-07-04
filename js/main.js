@@ -322,6 +322,18 @@ function radioChecker(warningBox, course, poolLength, genderTarget) {
   }
 }
 
+document
+  .getElementById("clearSwimmerButton-asa")
+  .addEventListener("click", () => {
+    const container = document.getElementById("swimmer-container-ASA");
+    container.innerHTML = ""; // Clear all swimmer boxes
+    for (let i = 0; i < 4; i++) {
+      addSwimmerBox("swimmer-container-ASA"); // Re-add 4 empty boxes
+    }
+    updateDeleteButtons(); // Update delete button visibility
+    const spinner = document.getElementById("spinner");
+    spinner.style.display = "none"; // Hide the spinner if it was visible
+  });
 /*Loading Spinner*/
 async function runPython(swimmer_array, course, poolLength, targetGender) {
   const sentData = {

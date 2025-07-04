@@ -126,16 +126,16 @@ def your_function(input_array,course,pool_length,target_gender):
     def matrix_input(asa_num,events):
         if n == 1:
             name, asa_num, df = get_times(asa_num)
-            print(name)
-            print(asa_num)
-            print(df)
-            print(".................")
+            # print(name)
+            # print(asa_num)
+            # print(df)
+            # print(".................")
         elif n == 2:
             name, asa_num, df = swim_cloud(asa_num)
-            print(name)
-            print(asa_num)
-            print(df)
-            print("...............")
+            # print(name)
+            # print(asa_num)
+            # print(df)
+            # print("...............")
         else:
             print("Error in choosing website")
 
