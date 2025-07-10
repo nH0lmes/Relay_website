@@ -189,6 +189,7 @@ def your_function(input_array,course,pool_length,target_gender):
     def not_mixed(gender):
         matrix_creator(gender)
         converted = [[time_conversion(ti)for ti in row] for row in matrix]
+        print(converted)
         m = Munkres()
         indexes = m.compute(converted)
         print (indexes)
@@ -203,6 +204,7 @@ def your_function(input_array,course,pool_length,target_gender):
             output_array.append( [column_name,row_name,original_value])
         sorted_array = sorted(output_array,key = lambda x:x[0])
         sorted_array.append(["Total Time:",reverse_conversion(total)])
+        print("Sorted Array:", sorted_array)
         return sorted_array
     def mixedRelay(gender):
         matrix_creator(gender)
