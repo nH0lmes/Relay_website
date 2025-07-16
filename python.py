@@ -13,6 +13,7 @@ import asyncpg
 from typing import Optional
 import datetime
 from itertools import combinations
+from murtys import murty_top_k_assignments,murty_gender_partitioned_top_k
 
 
 
@@ -189,23 +190,24 @@ def your_function(input_array,course,pool_length,target_gender):
     def not_mixed(gender):
         matrix_creator(gender)
         converted = [[time_conversion(ti)for ti in row] for row in matrix]
-        print(converted)
-        m = Munkres()
-        indexes = m.compute(converted)
-        print (indexes)
-        output_array =  []
-        total = 0
-        for row, column in indexes:
-            value = converted[row][column]
-            total += value
-            original_value = matrix[row][column]
-            row_name = names[row][0]
-            column_name = strokes[column]
-            output_array.append( [column_name,row_name,original_value])
-        sorted_array = sorted(output_array,key = lambda x:x[0])
-        sorted_array.append(["Total Time:",reverse_conversion(total)])
-        print("Sorted Array:", sorted_array)
-        return sorted_array
+        # print(converted)
+        # m = Munkres()
+        # indexes = m.compute(converted)
+        # print (indexes)
+        # output_array =  []
+        # total = 0
+        # for row, column in indexes:
+        #     value = converted[row][column]
+        #     total += value
+        #     original_value = matrix[row][column]
+        #     row_name = names[row][0]
+        #     column_name = strokes[column]
+        #     output_array.append( [column_name,row_name,original_value])
+        # sorted_array = sorted(output_array,key = lambda x:x[0])
+        # sorted_array.append(["Total Time:",reverse_conversion(total)])
+        # print("Sorted Array:", sorted_array)
+        sorted_array = murty_top_k_assignments(converted, names, strokes,k=5)
+        return sorted_array[0]
     def mixedRelay(gender):
         matrix_creator(gender)
         def valid_gender_combo(combo):

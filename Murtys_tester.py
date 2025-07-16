@@ -157,20 +157,61 @@ def your_function(input_array,course,pool_length):
         minutes, ms = divmod(ms,60000)
         seconds,ms = divmod(ms,1000)
         return f'{minutes}:{seconds:02}.{ms // 10:02}' if minutes > 0 else f'{seconds}.{ms // 10:02}'
-    
+    def brute_force_top_k(matrix_ms, swimmer_info, stroke_labels, k=5):
+        assert len(stroke_labels) == 4, "This function assumes exactly 4 strokes"
+        n = len(swimmer_info)
+        
+        results = []
 
+        # Generate all 4-swimmer combinations (combs)
+        for swimmer_indices in itertools.combinations(range(n), 4):
+            # For each combination of 4 swimmers, assign strokes in all permutations
+            for stroke_perm in itertools.permutations(range(4)):  # 4! stroke assignments
+                total_time = 0
+                assignment = []
+
+                valid = True
+                for swimmer_idx, stroke_idx in zip(swimmer_indices, stroke_perm):
+                    try:
+                        time = matrix_ms[swimmer_idx][stroke_idx]
+                        total_time += time
+                        assignment.append((swimmer_idx, stroke_idx))
+                    except IndexError:
+                        valid = False
+                        break
+                
+                if valid:
+                    results.append((assignment, total_time))
+        
+        # Sort results by total_time
+        results.sort(key=lambda x: x[1])
+        top_k = results[:k]
+
+        # Format results similarly to your Murty output
+        formatted = []
+        for idx, (assignment, cost) in enumerate(top_k):
+            detailed = []
+            for i, j in assignment:
+                name, gender = swimmer_info[i]
+                stroke = stroke_labels[j]
+                time_ms = matrix_ms[i][j]
+                detailed.append([stroke, name, reverse_conversion(time_ms)])
+            detailed.sort(key=lambda x: x[0])
+            detailed.append(["Total Time:", reverse_conversion(cost)])
+            formatted.append(detailed)
+
+        return formatted
+    brute = brute_force_top_k(matrix_ms, names, strokes, k=5)
+    print("Brute:",brute)
     top_assignments = murty_top_k_assignments(matrix_ms, names, strokes, k=5)
-    for result in top_assignments:
-        print(f"\nRank {result['rank']} - Total Time: {result['total_time']}")
-        for entry in result['assignment']:
-            print(f"  {entry['stroke']}: {entry['swimmer']} ({entry['gender']}) - {entry['time']}")
-
+    print("Murtys calculated:",top_assignments)
     top_k_results = murty_gender_partitioned_top_k(matrix_ms, names, strokes, k=5)
 
     for result in top_k_results:
         print(f"\nRank {result['rank']} - Total Time: {result['total_time']}")
         for entry in result['assignment']:
             print(f"  {entry['stroke']}: {entry['swimmer']} ({entry['gender']}) - {entry['time']}")
+    return top_assignments
 
 
-your_function(input_array, course='long', pool_length='50')
+print(your_function(input_array, course='long', pool_length='50'))
