@@ -207,48 +207,49 @@ def your_function(input_array,course,pool_length,target_gender):
         # sorted_array.append(["Total Time:",reverse_conversion(total)])
         # print("Sorted Array:", sorted_array)
         sorted_array = murty_top_k_assignments(converted, names, strokes,k=5)
-        return sorted_array[0]
+        return sorted_array
     def mixedRelay(gender):
         matrix_creator(gender)
-        def valid_gender_combo(combo):
-            genders = [gender for name, gender in combo]
-            return genders.count('Open/Male') == 2 and genders.count('Female') == 2
+        # def valid_gender_combo(combo):
+        #     genders = [gender for name, gender in combo]
+        #     return genders.count('Open/Male') == 2 and genders.count('Female') == 2
 
-        best_total = float('inf')
-        best_result = None
+        # best_total = float('inf')
+        # best_result = None
         converted = [[time_conversion(ti)for ti in row] for row in matrix]
-        for combo in combinations(names, 4):
-            if not valid_gender_combo(combo):
-                continue
+        # for combo in combinations(names, 4):
+        #     if not valid_gender_combo(combo):
+        #         continue
 
-            combo_names = [name for name, _ in combo]
-            indices = [names.index((name, gender)) for name, gender in combo]
+        #     combo_names = [name for name, _ in combo]
+        #     indices = [names.index((name, gender)) for name, gender in combo]
             
-            submatrix = [converted[i] for i in indices]
+        #     submatrix = [converted[i] for i in indices]
 
-            m = Munkres()
-            indexes = m.compute(submatrix)
+        #     m = Munkres()
+        #     indexes = m.compute(submatrix)
             
-            total = sum(submatrix[row][col] for row, col in indexes)
-            if total < best_total:
-                best_total = total
-                best_result = {
-                    'indexes': indexes,
-                    'matrix': submatrix,
-                    'names': combo_names,
-                    'indices': indices
-                }
-        output_array =  []
-        total = 0
-        for row, column in best_result["indexes"]:
-            stroke = strokes[column]
-            time = best_result["matrix"][row][column]
-            total += time
-            original_value = reverse_conversion(time)
-            output_array.append( [stroke,best_result["names"][row],original_value])
-        sorted_array = sorted(output_array,key = lambda x:x[0])
-        sorted_array.append(["Total Time:",reverse_conversion(total)])
-        return(sorted_array)
+        #     total = sum(submatrix[row][col] for row, col in indexes)
+        #     if total < best_total:
+        #         best_total = total
+        #         best_result = {
+        #             'indexes': indexes,
+        #             'matrix': submatrix,
+        #             'names': combo_names,
+        #             'indices': indices
+        #         }
+        # output_array =  []
+        # total = 0
+        # for row, column in best_result["indexes"]:
+        #     stroke = strokes[column]
+        #     time = best_result["matrix"][row][column]
+        #     total += time
+        #     original_value = reverse_conversion(time)
+        #     output_array.append( [stroke,best_result["names"][row],original_value])
+        # sorted_array = sorted(output_array,key = lambda x:x[0])
+        # sorted_array.append(["Total Time:",reverse_conversion(total)])
+        sorted_array = murty_gender_partitioned_top_k(converted, names, strokes, k=5)
+        return sorted_array
     if target_gender == "Mixed":
         sorted_array = mixedRelay("Mixed")
     elif target_gender == "Open/Male":

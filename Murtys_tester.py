@@ -206,12 +206,8 @@ def your_function(input_array,course,pool_length):
     top_assignments = murty_top_k_assignments(matrix_ms, names, strokes, k=5)
     print("Murtys calculated:",top_assignments)
     top_k_results = murty_gender_partitioned_top_k(matrix_ms, names, strokes, k=5)
-
-    for result in top_k_results:
-        print(f"\nRank {result['rank']} - Total Time: {result['total_time']}")
-        for entry in result['assignment']:
-            print(f"  {entry['stroke']}: {entry['swimmer']} ({entry['gender']}) - {entry['time']}")
-    return top_assignments
+    print(top_assignments)
+    return top_k_results
 
 
 print(your_function(input_array, course='long', pool_length='50'))

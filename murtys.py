@@ -29,7 +29,7 @@ def replace_inf_with_disallowed(matrix):
         [DISALLOWED if not math.isfinite(cell) else cell for cell in row]
         for row in matrix
     ]
-def murty_top_k_assignments(matrix_ms, swimmer_info, stroke_labels, k=5):
+def murty_top_k_assignments(matrix_ms, swimmer_info, stroke_labels, k=5, include_cost=False):
     def pad_cost_matrix(original_matrix, num_strokes, dummy_cost = 0):
         n_rows = len(original_matrix)
         n_cols = num_strokes
@@ -47,15 +47,11 @@ def murty_top_k_assignments(matrix_ms, swimmer_info, stroke_labels, k=5):
         return padded, dummy_job_indices
     def solve(cost_matrix):
         m = Munkres()
-        print("loaded Munkres")
-        print("cost_matrix:", cost_matrix)
         try:
             indexes = m.compute(cost_matrix)
         except:
             return [], float('inf')
-        print("solved")
         total_cost = sum(cost_matrix[i][j] for i, j in indexes)
-        print("cost calculated")
         return indexes, total_cost
     def create_modified_matrix(base_matrix, fixed, forbidden):
         m = [row[:] for row in base_matrix]
@@ -71,10 +67,8 @@ def murty_top_k_assignments(matrix_ms, swimmer_info, stroke_labels, k=5):
         return m
     
     def murtys_algorithm(matrix,swimmer_info, stroke_labels, k):
-        print ("Murtys running",swimmer_info)
         clean_matrix = replace_inf_with_disallowed(matrix)
         padded_matrix, dummy_job_indices = pad_cost_matrix(clean_matrix, len(stroke_labels))
-        print ("Padded Matrix:", padded_matrix)
         results = []
         seen_assignments = set()
         def is_dummy(j):
@@ -157,13 +151,17 @@ def murty_top_k_assignments(matrix_ms, swimmer_info, stroke_labels, k=5):
                 time_ms = matrix[i][j]
                 detailed.append([stroke, name, reverse_conversion(time_ms)])
             detailed.sort(key=lambda x: x[0])
-            detailed.append(["Total Time:", reverse_conversion(cost)])
-            formatted_results.append(detailed)
+            
+            if include_cost:
+                formatted_results.append((cost,detailed))
+            else:
+                detailed.append(["Total Time:", reverse_conversion(cost)])
+                formatted_results.append(detailed)
         return formatted_results
     
     return murtys_algorithm(matrix_ms, swimmer_info, stroke_labels, k=5)
 
-def murty_gender_partitioned_top_k(matrix_ms, swimmer_info, stroke_labels, k=20):
+def murty_gender_partitioned_top_k(matrix_ms, swimmer_info, stroke_labels, k=5):
     assert len(stroke_labels) == 4, "Expected 4 strokes"
 
     m = Munkres()
@@ -173,8 +171,8 @@ def murty_gender_partitioned_top_k(matrix_ms, swimmer_info, stroke_labels, k=20)
     females = [i for i, (_, g) in enumerate(swimmer_info) if g == "Female"]
     
     # Step 2: Generate all valid 2M2F combinations
-    valid_teams = list(itertools.product(itertools.combinations(males, 4),
-                                        itertools.combinations(females, 0)))
+    valid_teams = list(itertools.product(itertools.combinations(males, 2),
+                                        itertools.combinations(females, 2)))
     assignments = []
     for male_pair, female_pair in valid_teams:
         team_indices = list(male_pair) + list(female_pair)
@@ -187,42 +185,20 @@ def murty_gender_partitioned_top_k(matrix_ms, swimmer_info, stroke_labels, k=20)
             print("Cost matrix:", cost_matrix)
             print("Stroke labels:", stroke_labels)
         try:
-            team_results = murty_top_k_assignments(cost_matrix, team_info, stroke_labels, k=5)
+            team_results = murty_top_k_assignments(cost_matrix, team_info, stroke_labels, k=5, include_cost=True)
         except Exception as e:
             print(f"Error on team {team_info}: {e}")
             continue
-
-        for result in team_results:
-            formatted = []
-            for row in result:
-                if row[0] == "Total Time:":
-                    total_time = row[1]
-                    continue
-                stroke, name, time = row
-                gender = next(g for n, g in team_info if n == name)
-                formatted.append({
-                    "swimmer": name,
-                    "gender": gender,
-                    "stroke": stroke,
-                    "time": time,
-                    "time_ms": time_conversion(time)
-                })
-
-            formatted.sort(key=lambda x: x["stroke"])
-            assignments.append({
-                "team": team_info,
-                "assignment": formatted,
-                "total_time": total_time,
-                "total_time_ms" : time_conversion(total_time)
-            })
-
-        
+        assignments.extend(team_results)
 
     # Step 4: Sort and select top-K overall
-    top_k = sorted(assignments, key=lambda x: x['total_time_ms'])[:k]
-    for rank, item in enumerate(top_k, 1):
-        item["rank"] = rank
-    return top_k
+    top_k = sorted(assignments, key=lambda x: x[0])[:k]
+    returned_results = []
+    for results in top_k:
+        result = results[1]  # Exclude cost from final output
+        result.append(["Total Time:", reverse_conversion(results[0])])
+        returned_results.append(result) # Exclude cost from final output
+    return returned_results
 
 print( Munkres().compute([[DISALLOWED, 26380,DISALLOWED,DISALLOWED], [26170,DISALLOWED,DISALLOWED,DISALLOWED], [25490, DISALLOWED, 35580, 28620], [24670, DISALLOWED, DISALLOWED,DISALLOWED]]))
 def is_feasible(matrix):

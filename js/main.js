@@ -260,8 +260,9 @@ document.querySelectorAll(".form-container").forEach((form) => {
             targetGender.value
           );
           if (swimmer_list2) {
+            console.log("Swimmer List:", swimmer_list2);
             for (assignment in swimmer_list2) {
-              tbl_create(swimmer_list2);
+              tbl_create(swimmer_list2[assignment]);
             } // Proceed only if there's no error
           } else {
             console.error("Failed to create the table due to an error.");
