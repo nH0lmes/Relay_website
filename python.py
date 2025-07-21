@@ -15,7 +15,8 @@ import datetime
 from itertools import combinations
 from murtys import murty_top_k_assignments,murty_gender_partitioned_top_k
 import traceback
-
+import aiohttp
+import asyncio
 
 app = FastAPI()
 app.add_middleware(
@@ -39,14 +40,14 @@ async def run_function(data: InputData):
     try:
         print("Received data:",data.array)
         print("Gender:",data.target_gender)
-        result = your_function(data.array,data.courseType,data.pool_length,data.target_gender)
+        result = await your_function(data.array,data.courseType,data.pool_length,data.target_gender)
         return {"result": result}
     except Exception as e:
         print("Error in processing:", str(e))
         traceback.print_exc()
         raise HTTPException(status_code=400, detail=str(e))
 
-def your_function(input_array,course,pool_length,target_gender):
+async def your_function(input_array,course,pool_length,target_gender):
     n=1
     def swim_cloud(sc_number):
         event_template  = pd.read_csv("D:/Personal/Real Website V2/Events-template.csv")
@@ -92,11 +93,11 @@ def your_function(input_array,course,pool_length,target_gender):
         merged_df = pd.merge(merged_df,lc_df, on='Event',how = 'outer')
         
         return name,sc_number,merged_df
-    def get_times(asa_number):
-        event_template  = pd.read_csv("Events-template.csv")
+    async def get_times(asa_number,session,event_template):
         url = f'https://www.swimmingresults.org/individualbest/personal_best.php?mode=A&tiref={asa_number}'
-        page = requests.get(url)
-        soup = BeautifulSoup(page.text,'lxml')
+        async with session.get(url) as response:
+            page = await response.text()
+        soup = BeautifulSoup(page,'lxml')
         
         
         def extract_table(table):
@@ -144,15 +145,15 @@ def your_function(input_array,course,pool_length,target_gender):
         name = soup.find('p',class_ = 'rnk_sj').text.strip().split(' - ')[0]
         return name,asa_number,merged_df
     
-    def matrix_input(asa_num,events):
+    async def matrix_input(asa_num,events, session, event_template):
         if n == 1:
-            name, asa_num, df = get_times(asa_num)
+            name, asa_num, df = await get_times(asa_num,session,event_template)
             print(name)
             # print(asa_num)
             print(df)
             # print(".................")
         elif n == 2:
-            name, asa_num, df = swim_cloud(asa_num)
+            name, asa_num, df = swim_cloud(asa_num,session)
             # print(name)
             # print(asa_num)
             # print(df)
@@ -172,15 +173,21 @@ def your_function(input_array,course,pool_length,target_gender):
     genders = []
     names= []
     matrix = []
-    def matrix_creator(gender):
-        for number in numbers:
-            if gender != "Mixed" and number[1] != gender:
-                continue
-            num = number[0]
-            name,row = matrix_input(num,medley)
-            names.append((name,number[1]))
-            genders.append(number[1])
-            matrix.append(row)    
+    async def matrix_creator(gender):
+        event_template  = pd.read_csv("Events-template.csv")
+        medley = [(pool_length + ' ' + x) for x in strokes]
+        async with aiohttp.ClientSession() as session:
+            tasks = []
+            for number in numbers:
+                if gender != "Mixed" and number[1] != gender:
+                    continue
+                tasks.append(matrix_input(number[0], medley, session, event_template))
+            results = await asyncio.gather(*tasks)
+        for (name,row), number in zip(results, [num for num in numbers if gender == "Mixed" or num[1] == gender]):
+                names.append((name, number[1]))
+                genders.append(number[1])
+                matrix.append(row)
+    
     print(names)
     print(genders)
     def time_conversion(t):
@@ -228,50 +235,13 @@ def your_function(input_array,course,pool_length,target_gender):
         # print("Sorted Array:", sorted_array)
         sorted_array = murty_top_k_assignments(converted, names, strokes,k=5)
         return sorted_array
-    def mixedRelay(gender):
-        matrix_creator(gender)
-        # def valid_gender_combo(combo):
-        #     genders = [gender for name, gender in combo]
-        #     return genders.count('Open/Male') == 2 and genders.count('Female') == 2
-
-        # best_total = float('inf')
-        # best_result = None
+    async def mixedRelay(gender):
+        await matrix_creator(gender)
         converted = [[time_conversion(ti)for ti in row] for row in matrix]
-        # for combo in combinations(names, 4):
-        #     if not valid_gender_combo(combo):
-        #         continue
-
-        #     combo_names = [name for name, _ in combo]
-        #     indices = [names.index((name, gender)) for name, gender in combo]
-            
-        #     submatrix = [converted[i] for i in indices]
-
-        #     m = Munkres()
-        #     indexes = m.compute(submatrix)
-            
-        #     total = sum(submatrix[row][col] for row, col in indexes)
-        #     if total < best_total:
-        #         best_total = total
-        #         best_result = {
-        #             'indexes': indexes,
-        #             'matrix': submatrix,
-        #             'names': combo_names,
-        #             'indices': indices
-        #         }
-        # output_array =  []
-        # total = 0
-        # for row, column in best_result["indexes"]:
-        #     stroke = strokes[column]
-        #     time = best_result["matrix"][row][column]
-        #     total += time
-        #     original_value = reverse_conversion(time)
-        #     output_array.append( [stroke,best_result["names"][row],original_value])
-        # sorted_array = sorted(output_array,key = lambda x:x[0])
-        # sorted_array.append(["Total Time:",reverse_conversion(total)])
         sorted_array = murty_gender_partitioned_top_k(converted, names, strokes, k=5)
         return sorted_array
     if target_gender == "Mixed":
-        sorted_array = mixedRelay("Mixed")
+        sorted_array = await mixedRelay("Mixed")
     elif target_gender == "Open/Male":
         sorted_array = not_mixed("Open/Male")
     elif target_gender == "Female":
