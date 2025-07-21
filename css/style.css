@@ -196,6 +196,7 @@ img {
 }
 .autocomplete-items:empty {
   box-shadow: none;
+  display: none;
 }
 .autocomplete-items,
 .autocomplete-club div {

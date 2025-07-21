@@ -207,7 +207,7 @@ def your_function(input_array,course,pool_length):
     print("Murtys calculated:",top_assignments)
     top_k_results = murty_gender_partitioned_top_k(matrix_ms, names, strokes, k=5)
     print(top_assignments)
-    return top_k_results
+    return top_assignments
 
 
 print(your_function(input_array, course='long', pool_length='50'))

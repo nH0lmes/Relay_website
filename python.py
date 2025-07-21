@@ -14,7 +14,7 @@ from typing import Optional
 import datetime
 from itertools import combinations
 from murtys import murty_top_k_assignments,murty_gender_partitioned_top_k
-
+import traceback
 
 
 app = FastAPI()
@@ -43,6 +43,7 @@ async def run_function(data: InputData):
         return {"result": result}
     except Exception as e:
         print("Error in processing:", str(e))
+        traceback.print_exc()
         raise HTTPException(status_code=400, detail=str(e))
 
 def your_function(input_array,course,pool_length,target_gender):
@@ -100,36 +101,55 @@ def your_function(input_array,course,pool_length,target_gender):
         
         def extract_table(table):
             headers = [header.text.strip() for header in table.find_all('th')[:2]]
+            if len(headers) < 2:
+                return pd.DataFrame()  # Return empty DataFrame if no data
             df = pd.DataFrame(columns = headers)
             rows = table.find_all('tr')[1:]
             for row in rows:
                 cols = row.find_all('td')
+                if len(cols) < 2:
+                    continue
                 individual_data = [data.text.strip() for data in cols[:2]]
                 df.loc[len(df)]=individual_data
             
             return df
         
-        lc_table = soup.find_all('table')[0]
-        sc_table = soup.find_all('table')[1]
-        
-        lc_df = extract_table(lc_table)
-        sc_df = extract_table(sc_table)
-        
-        lc_df.columns = ['Event', 'LC Time']
-        sc_df.columns = ['Event', 'SC Time']
+        tables =  soup.find_all('table')[:-1]
+        lc_df = pd.DataFrame(columns = ['Event', 'LC Time'])
+        sc_df = pd.DataFrame(columns = ['Event', 'SC Time'])
+
+        if len(tables) >= 1:
+            first_table = extract_table(tables[0])
+            header = first_table.columns[1]
+            if 'LC' in header:
+                lc_df = first_table
+                lc_df.columns = ['Event', 'LC Time']
+            elif 'SC' in header:
+                sc_df = first_table
+                sc_df.columns = ['Event', 'SC Time']
+        if len(tables) >= 2:
+            second_table = extract_table(tables[1])
+            header = second_table.columns[1]
+            if 'LC' in header:
+                lc_df = second_table
+                lc_df.columns = ['Event', 'LC Time']
+            elif 'SC' in header:
+                sc_df = second_table
+                sc_df.columns = ['Event', 'SC Time']
         
         merged_df = pd.merge(event_template,sc_df, on='Event',how = 'outer')
         merged_df = pd.merge(merged_df,lc_df, on='Event',how = 'outer')
-        
+        #for col in ['SC Time', 'LC Time']:
+            #merged_df[col] = merged_df[col].fillna(math.inf)
         name = soup.find('p',class_ = 'rnk_sj').text.strip().split(' - ')[0]
         return name,asa_number,merged_df
     
     def matrix_input(asa_num,events):
         if n == 1:
             name, asa_num, df = get_times(asa_num)
-            # print(name)
+            print(name)
             # print(asa_num)
-            # print(df)
+            print(df)
             # print(".................")
         elif n == 2:
             name, asa_num, df = swim_cloud(asa_num)

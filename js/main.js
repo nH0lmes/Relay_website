@@ -262,7 +262,7 @@ document.querySelectorAll(".form-container").forEach((form) => {
           if (swimmer_list2) {
             console.log("Swimmer List:", swimmer_list2);
             for (assignment in swimmer_list2) {
-              tbl_create(swimmer_list2[assignment]);
+              tbl_create(swimmer_list2[0]);
             } // Proceed only if there's no error
           } else {
             console.error("Failed to create the table due to an error.");

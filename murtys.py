@@ -107,7 +107,6 @@ def murty_top_k_assignments(matrix_ms, swimmer_info, stroke_labels, k=5, include
         # Step 2: Expand subproblems
         while len(results) < k and queue:
             cost, fixed, forbidden, assignment = heapq.heappop(queue)
-            print("popped",assignment)
             #print("fixed:", fixed, "forbidden:", forbidden, "cost:", cost)
             if not add_result(assignment, cost):
                 continue  # Skip duplicates
@@ -157,9 +156,28 @@ def murty_top_k_assignments(matrix_ms, swimmer_info, stroke_labels, k=5, include
             else:
                 detailed.append(["Total Time:", reverse_conversion(cost)])
                 formatted_results.append(detailed)
+        
         return formatted_results
-    
-    return murtys_algorithm(matrix_ms, swimmer_info, stroke_labels, k=5)
+        
+    best_teams = murtys_algorithm(matrix_ms, swimmer_info, stroke_labels, k=5)
+    return best_teams
+    best_team,cost = solve(matrix_ms)
+    remove_swimmers = [i for i, _ in best_team]
+    swimmer_info = [n for idx, n in enumerate(swimmer_info) if idx not in remove_swimmers]
+    matrix_ms = [row for idx, row in enumerate(matrix_ms) if idx not in remove_swimmers]
+    b_team,cost = solve(matrix_ms)
+    results = []
+    for i, j in b_team:
+        name = swimmer_info[i][0]
+        stroke = stroke_labels[j]
+        time_ms = matrix_ms[i][j]
+        results.append([stroke, name, reverse_conversion(time_ms)])
+    results.sort(key=lambda x: x[0])
+    #results.append(["Total Time:", reverse_conversion(cost)])
+    #best_teams.append(results)
+    #print("Best Teams:", best_teams)
+    return best_teams
+
 
 def murty_gender_partitioned_top_k(matrix_ms, swimmer_info, stroke_labels, k=5):
     assert len(stroke_labels) == 4, "Expected 4 strokes"
@@ -173,40 +191,105 @@ def murty_gender_partitioned_top_k(matrix_ms, swimmer_info, stroke_labels, k=5):
     # Step 2: Generate all valid 2M2F combinations
     valid_teams = list(itertools.product(itertools.combinations(males, 2),
                                         itertools.combinations(females, 2)))
+    def solve(cost_matrix):
+        fallback_cost = 99999999  # Arbitrarily large cost to discourage selection
+
+        # Replace any inf values with a finite fallback
+        clean_matrix = [
+            [fallback_cost if val == float('inf') else val for val in row]
+            for row in cost_matrix
+        ]
+
+        m = Munkres()
+        try:
+            indexes = m.compute(clean_matrix)
+        except:
+            return [], float('inf')
+        total_cost = sum(clean_matrix[i][j] for i, j in indexes)
+        return indexes, total_cost
+    print(len(valid_teams), "valid teams found")
     assignments = []
+    counter = 0
     for male_pair, female_pair in valid_teams:
         team_indices = list(male_pair) + list(female_pair)
         team_info = [swimmer_info[i] for i in team_indices]
         cost_matrix = [matrix_ms[i] for i in team_indices]
-        if team_info == [('Jack Skerry', 'Open/Male'), ('Jacob Whittle', 'Open/Male'), ('Kaleb Fox-Jones', 'Open/Male'), ('Nathan Holmes', 'Open/Male')]:
-            team_results = murty_top_k_assignments(cost_matrix, team_info, stroke_labels, k=5)
-            print("Team results:", team_results)
-            print("Team info:", team_info)
-            print("Cost matrix:", cost_matrix)
-            print("Stroke labels:", stroke_labels)
         try:
-            team_results = murty_top_k_assignments(cost_matrix, team_info, stroke_labels, k=5, include_cost=True)
+            indexes,total_cost = solve(cost_matrix)
         except Exception as e:
             print(f"Error on team {team_info}: {e}")
             continue
-        assignments.extend(team_results)
+        assignment = []
+        assignments.append((total_cost, team_indices, team_info, cost_matrix))
+        counter +=1
+        if counter % 1000 == 0:
+            print(f"Processed {counter} teams")
+        
+
+
+
 
     # Step 4: Sort and select top-K overall
-    top_k = sorted(assignments, key=lambda x: x[0])[:k]
-    returned_results = []
-    for results in top_k:
-        result = results[1]  # Exclude cost from final output
-        result.append(["Total Time:", reverse_conversion(results[0])])
-        returned_results.append(result) # Exclude cost from final output
+    top_assignments = sorted(assignments, key=lambda x: x[0])[:k]
+    refined_results = []
+    for total_cost, team_indices,team_info, cost_matrix in top_assignments:
+        try:
+            murty_results = murty_top_k_assignments(cost_matrix, team_info, stroke_labels, k=5, include_cost=True)
+            print(murty_results)
+        except Exception as e:
+            print(f"Murty failed on team {team_info}: {e}")
+            continue
+
+        for result in murty_results:
+            print("Result:", result)
+            cost = result[0]
+            assignment = result[1]
+            assignment.append(["Total Time:", reverse_conversion(cost)])
+            refined_results.append((cost, assignment))
+
+
+    final_top_5 = sorted(refined_results, key=lambda x: x[0])[:k]
+    returned_results = [assignment for _, assignment in final_top_5]
+
+    print("Returned Results:", returned_results)
     return returned_results
 
-print( Munkres().compute([[DISALLOWED, 26380,DISALLOWED,DISALLOWED], [26170,DISALLOWED,DISALLOWED,DISALLOWED], [25490, DISALLOWED, 35580, 28620], [24670, DISALLOWED, DISALLOWED,DISALLOWED]]))
-def is_feasible(matrix):
-    size = len(matrix)
-    # For each row, count how many valid (non-DISALLOWED) entries it has
-    row_valid_counts = [sum(1 for cell in row if cell is not DISALLOWED) for row in matrix]
-    col_valid_counts = [sum(1 for row in matrix if row[j] is not DISALLOWED) for j in range(size)]
 
-    # If any row or column is entirely DISALLOWED, there's no solution
-    return all(count > 0 for count in row_valid_counts) and all(count > 0 for count in col_valid_counts)
-print(is_feasible([[DISALLOWED, 26380,DISALLOWED,DISALLOWED], [26170,DISALLOWED,DISALLOWED,DISALLOWED], [25490, DISALLOWED, 35580, 28620], [24670, DISALLOWED, DISALLOWED,DISALLOWED]]))
+    excluded_swimmers = {entry[1] for entry in fastest}
+    b_team = [item for item in sorted_teams if not excluded_swimmers.intersection({entry[1]for entry in item[1]})]
+    if b_team:
+        result = b_team[0][1]
+        result.append(["Total Time:", reverse_conversion(b_team[0][0])])
+        returned_results.append(result)
+    print("Returned Results:", returned_results)
+    return returned_results
+
+def b_team(matrix_ms, swimmer_info, stroke_labels, k=5):
+    def solve(cost_matrix):
+        m = Munkres()
+        try:
+            indexes = m.compute(cost_matrix)
+        except:
+            return [], float('inf')
+        return indexes
+    best_team = solve(matrix_ms)
+    remove_swimmers = [i for i, _ in best_team]
+    swimmer_info = [n for idx, n in enumerate(swimmer_info) if idx not in remove_swimmers]
+    matrix_ms = [row for idx, row in enumerate(matrix_ms) if idx not in remove_swimmers]
+    # print("Best team:", best_team)
+    # print("Swimmer info:", swimmer_info)
+    # print("Stroke labels:", stroke_labels)
+    # print("Matrix MS:", matrix_ms)
+    b_team = solve(matrix_ms)
+    #print("B team:", b_team)
+    results = []
+    for i, j in b_team:
+        name = swimmer_info[i][0]
+        stroke = stroke_labels[j]
+        time_ms = matrix_ms[i][j]
+        results.append([stroke, name, reverse_conversion(time_ms)])
+        results.sort(key=lambda x: x[0])
+        results.append(["Total Time:", reverse_conversion(sum(matrix_ms[i][j] for i, j in b_team))])
+    #print("B team results:", results)
+    return results
+
