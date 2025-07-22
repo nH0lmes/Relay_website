@@ -1,5 +1,4 @@
 from munkres import Munkres
-import copy
 import heapq
 import itertools
 import math

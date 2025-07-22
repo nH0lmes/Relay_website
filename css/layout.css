@@ -1,0 +1,48 @@
+/* Utility Containers */
+.container {
+  max-width: 1500px;
+  width: 95%;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.container_double {
+  max-width: 1500px;
+  width: 95%;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.containersm {
+  max-width: 40%;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+.box {
+  flex: 1;
+  padding: 20px;
+  background-color: var(--white);
+  text-align: center;
+}
+
+.wrapper {
+  width: 100%;
+  position: relative;
+  display: flex;
+  justify-content: center;
+}
+
+.new-one {
+  position: relative;
+}
+
+.text_seperator {
+  height: 2px;
+  width: 70%;
+  background-color: #2cd8ff;
+  outline: none;
+  margin: 5px auto;
+}

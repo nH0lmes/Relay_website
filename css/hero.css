@@ -1,0 +1,45 @@
+/* Hero */
+.hero {
+  width: 95%;
+  max-width: 1500px;
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin: 0 auto;
+  align-items: center;
+  background-color: #000072;
+}
+
+.hero .container {
+  width: 100%;
+  position: relative;
+  margin: 0;
+  padding: 0;
+}
+
+.hero .container img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: cover;
+  padding: 0;
+  margin: 0;
+  border: none;
+}
+
+.hero .hero-content {
+  position: absolute;
+  top: 0%;
+  left: 0%;
+  background-color: var(--white);
+  padding: 20px;
+  max-width: 40%;
+  text-align: center;
+  z-index: 2;
+  border-radius: 0 0 10px 0;
+}
+
+.hero .hero-text {
+  width: 70%;
+  margin-bottom: 20px;
+}
