@@ -214,26 +214,10 @@ async def your_function(input_array,course,pool_length,target_gender):
     converted = [[time_conversion(ti)for ti in row] for row in matrix]
     print(converted)
     print(names)
-    def not_mixed(gender):
-        matrix_creator(gender)
+    async def not_mixed(gender):
+        await matrix_creator(gender)
         converted = [[time_conversion(ti)for ti in row] for row in matrix]
-        # print(converted)
-        # m = Munkres()
-        # indexes = m.compute(converted)
-        # print (indexes)
-        # output_array =  []
-        # total = 0
-        # for row, column in indexes:
-        #     value = converted[row][column]
-        #     total += value
-        #     original_value = matrix[row][column]
-        #     row_name = names[row][0]
-        #     column_name = strokes[column]
-        #     output_array.append( [column_name,row_name,original_value])
-        # sorted_array = sorted(output_array,key = lambda x:x[0])
-        # sorted_array.append(["Total Time:",reverse_conversion(total)])
-        # print("Sorted Array:", sorted_array)
-        sorted_array = murty_top_k_assignments(converted, names, strokes,k=5)
+        sorted_array = murty_top_k_assignments(converted, names, strokes,k=5,is_for_mixed=False)
         return sorted_array
     async def mixedRelay(gender):
         await matrix_creator(gender)
@@ -243,9 +227,9 @@ async def your_function(input_array,course,pool_length,target_gender):
     if target_gender == "Mixed":
         sorted_array = await mixedRelay("Mixed")
     elif target_gender == "Open/Male":
-        sorted_array = not_mixed("Open/Male")
+        sorted_array = await not_mixed("Open/Male")
     elif target_gender == "Female":
-        sorted_array = not_mixed("Female")
+        sorted_array = await not_mixed("Female")
     return(sorted_array)
 
 @app.get("/search")

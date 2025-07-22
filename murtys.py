@@ -29,7 +29,7 @@ def replace_inf_with_disallowed(matrix):
         [DISALLOWED if not math.isfinite(cell) else cell for cell in row]
         for row in matrix
     ]
-def murty_top_k_assignments(matrix_ms, swimmer_info, stroke_labels, k=5, include_cost=False):
+def murty_top_k_assignments(matrix_ms, swimmer_info, stroke_labels, k=5, is_for_mixed=False):
     def pad_cost_matrix(original_matrix, num_strokes, dummy_cost = 0):
         n_rows = len(original_matrix)
         n_cols = num_strokes
@@ -151,7 +151,7 @@ def murty_top_k_assignments(matrix_ms, swimmer_info, stroke_labels, k=5, include
                 detailed.append([stroke, name, reverse_conversion(time_ms)])
             detailed.sort(key=lambda x: x[0])
             
-            if include_cost:
+            if is_for_mixed:
                 formatted_results.append((cost,detailed))
             else:
                 detailed.append(["Total Time:", reverse_conversion(cost)])
@@ -160,23 +160,24 @@ def murty_top_k_assignments(matrix_ms, swimmer_info, stroke_labels, k=5, include
         return formatted_results
         
     best_teams = murtys_algorithm(matrix_ms, swimmer_info, stroke_labels, k=5)
-    return best_teams
-    best_team,cost = solve(matrix_ms)
-    remove_swimmers = [i for i, _ in best_team]
-    swimmer_info = [n for idx, n in enumerate(swimmer_info) if idx not in remove_swimmers]
-    matrix_ms = [row for idx, row in enumerate(matrix_ms) if idx not in remove_swimmers]
-    b_team,cost = solve(matrix_ms)
-    results = []
-    for i, j in b_team:
-        name = swimmer_info[i][0]
-        stroke = stroke_labels[j]
-        time_ms = matrix_ms[i][j]
-        results.append([stroke, name, reverse_conversion(time_ms)])
-    results.sort(key=lambda x: x[0])
-    #results.append(["Total Time:", reverse_conversion(cost)])
-    #best_teams.append(results)
-    #print("Best Teams:", best_teams)
-    return best_teams
+    if is_for_mixed:
+        return best_teams
+    else:
+        best_team,cost = solve(matrix_ms)
+        remove_swimmers = [i for i, _ in best_team]
+        swimmer_info = [n for idx, n in enumerate(swimmer_info) if idx not in remove_swimmers]
+        matrix_ms = [row for idx, row in enumerate(matrix_ms) if idx not in remove_swimmers]
+        b_team,cost = solve(matrix_ms)
+        results = []
+        for i, j in b_team:
+            name = swimmer_info[i][0]
+            stroke = stroke_labels[j]
+            time_ms = matrix_ms[i][j]
+            results.append([stroke, name, reverse_conversion(time_ms)])
+        results.sort(key=lambda x: x[0])
+        results.append(["Total Time:", reverse_conversion(sum(matrix_ms[i][j] for i, j in b_team))])
+        best_teams.append(results)
+        return best_teams
 
 
 def murty_gender_partitioned_top_k(matrix_ms, swimmer_info, stroke_labels, k=5):
@@ -219,22 +220,26 @@ def murty_gender_partitioned_top_k(matrix_ms, swimmer_info, stroke_labels, k=5):
         except Exception as e:
             print(f"Error on team {team_info}: {e}")
             continue
+        results = []
+        for i,j in indexes:
+            global_i = team_indices[i]
+            name,gender = swimmer_info[global_i]
+            stroke = stroke_labels[j]
+            time_ms = matrix_ms[global_i][j]
+            results.append([stroke, name, reverse_conversion(time_ms)])
         assignment = []
-        assignments.append((total_cost, team_indices, team_info, cost_matrix))
+        assignments.append((total_cost, team_info,results, cost_matrix))
         counter +=1
         if counter % 1000 == 0:
             print(f"Processed {counter} teams")
         
-
-
-
-
     # Step 4: Sort and select top-K overall
-    top_assignments = sorted(assignments, key=lambda x: x[0])[:k]
+    sorted_teams = sorted(assignments, key=lambda x: x[0])
+    top_assignments = sorted_teams[:k]
     refined_results = []
-    for total_cost, team_indices,team_info, cost_matrix in top_assignments:
+    for total_cost,team_info,results, cost_matrix in top_assignments:
         try:
-            murty_results = murty_top_k_assignments(cost_matrix, team_info, stroke_labels, k=5, include_cost=True)
+            murty_results = murty_top_k_assignments(cost_matrix, team_info, stroke_labels, k=5, is_for_mixed=True)
             print(murty_results)
         except Exception as e:
             print(f"Murty failed on team {team_info}: {e}")
@@ -247,18 +252,17 @@ def murty_gender_partitioned_top_k(matrix_ms, swimmer_info, stroke_labels, k=5):
             assignment.append(["Total Time:", reverse_conversion(cost)])
             refined_results.append((cost, assignment))
 
-
     final_top_5 = sorted(refined_results, key=lambda x: x[0])[:k]
     returned_results = [assignment for _, assignment in final_top_5]
 
-    print("Returned Results:", returned_results)
-    return returned_results
-
-
-    excluded_swimmers = {entry[1] for entry in fastest}
-    b_team = [item for item in sorted_teams if not excluded_swimmers.intersection({entry[1]for entry in item[1]})]
+    fastest = final_top_5[0]
+    print("Fastest team:", fastest[1])
+    excluded_swimmers = {entry[1] for entry in fastest[1][:-1]}
+    print("Excluded swimmers:", excluded_swimmers)
+    print("sorted_teams:", sorted_teams[0])
+    b_team = [item for item in sorted_teams if not excluded_swimmers.intersection({entry[1] for entry in item[2]})]
     if b_team:
-        result = b_team[0][1]
+        result = b_team[0][2]
         result.append(["Total Time:", reverse_conversion(b_team[0][0])])
         returned_results.append(result)
     print("Returned Results:", returned_results)

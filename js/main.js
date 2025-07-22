@@ -261,10 +261,14 @@ document.querySelectorAll(".form-container").forEach((form) => {
           );
           if (swimmer_list2) {
             console.log("Swimmer List:", swimmer_list2);
-            for (assignment in swimmer_list2) {
-              tbl_create(swimmer_list2[0]);
-            } // Proceed only if there's no error
-          } else {
+            document.getElementById("table-row-top").innerHTML = "";
+            document.getElementById("table-row-mid").innerHTML = "";
+            document.getElementById("table-row-bottom").innerHTML = "";
+            swimmer_list2.forEach((swimmers, index) => {
+              tbl_create(swimmers, index);
+            });
+          }
+          else {
             console.error("Failed to create the table due to an error.");
           }
         } catch (error) {
@@ -361,10 +365,7 @@ async function runPython(swimmer_array, course, poolLength, targetGender) {
     return null;
   }
 }
-function tbl_create(swimmer_list) {
-  if (typeof tbl_wrapper !== "undefined") {
-    tbl_wrapper.remove();
-  }
+function tbl_create(swimmer_list,index) {
   const tbl_section = document.getElementById("results");
   const tbl = document.createElement("table");
   tbl.className = "results-table";
@@ -403,6 +404,13 @@ function tbl_create(swimmer_list) {
   tbl_wrapper.className = "table-container";
   tbl_wrapper.appendChild(tbl);
   tbl_section.appendChild(tbl_wrapper);
+  if (index === 0) {
+    document.getElementById("table-row-top").appendChild(tbl_wrapper);
+  } else if (index === 5) {
+    document.getElementById("table-row-bottom").appendChild(tbl_wrapper);
+  } else {
+    document.getElementById("table-row-mid").appendChild(tbl_wrapper);
+  }
   tbl_wrapper.scrollIntoView({ behavior: "smooth" });
 }
 
