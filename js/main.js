@@ -69,6 +69,7 @@ function addSwimmerBox(containerId) {
 
   const club = document.createElement("div");
   club.className = "form-input";
+  club.id = `club-input-wrapper${nameCount}`;
 
   const label_club = document.createElement("label");
   label_club.setAttribute("for", `club${nameCount}`);
@@ -80,7 +81,11 @@ function addSwimmerBox(containerId) {
   input_club.id = `club${nameCount}`;
   input_club.name = `club${nameCount}`;
 
-  club.append(label_club, input_club);
+  const autocomplete_club = document.createElement("div");
+  autocomplete_club.id = `autocomplete-club${nameCount}`;
+  autocomplete_club.className = "autocomplete-club";
+
+  club.append(label_club, input_club, autocomplete_club);
 
   const deleteButton = document.createElement("i");
   deleteButton.className = "delete-button fa-solid fa-trash";
@@ -90,10 +95,11 @@ function addSwimmerBox(containerId) {
     reindexSwimmerBoxes(containerId);
   });
 
-  wrapper.append(header, name, asa_num, club, deleteButton, gender);
+  wrapper.append(header, name, club, asa_num, deleteButton, gender);
 
   container.appendChild(wrapper);
   setupAutocomplete(input_name);
+  clubFilter(club);
   updateDeleteButtons();
   return wrapper;
 }
@@ -134,38 +140,70 @@ function collapseSwimmerBoxes(wrapper) {
 function reindexSwimmerBoxes(containerId) {
   const container = document.getElementById(containerId);
   const swimmerBoxes = container.querySelectorAll(".individual-input");
-  const deleteButtons = container.querySelectorAll(".btn-delete");
 
   swimmerBoxes.forEach((box, index) => {
     const newIndex = index + 1;
     box.dataset.index = newIndex;
 
+    // Header
     const header = box.querySelector("h2");
-    header.textContent = `Swimmer ${newIndex}`;
+    if (header) header.textContent = `Swimmer ${newIndex}`;
 
+    // ASA Number
     const asaInput = box.querySelector("input[id^='asa-number']");
     const asaLabel = box.querySelector("label[for^='asa-number']");
-    asaInput.id = `asa-number${newIndex}`;
-    asaInput.name = `asa-number${newIndex}`;
+    if (asaInput) {
+      asaInput.id = `asa-number${newIndex}`;
+      asaInput.name = `asa-number${newIndex}`;
+    }
+    if (asaLabel) {
+      asaLabel.setAttribute("for", `asa-number${newIndex}`);
+    }
 
+    // Name
     const nameInput = box.querySelector("input[id^='name']");
     const nameLabel = box.querySelector("label[for^='name']");
-    nameInput.id = `name${newIndex}`;
-    nameInput.name = `name${newIndex}`;
-    nameLabel.setAttribute("for", `name${newIndex}`);
+    const autocomplete = box.querySelector("div[id^='autocomplete-list']");
+    if (nameInput) {
+      nameInput.id = `name${newIndex}`;
+      nameInput.name = `name${newIndex}`;
+    }
+    if (nameLabel) {
+      nameLabel.setAttribute("for", `name${newIndex}`);
+    }
+    if (autocomplete) {
+      autocomplete.id = `autocomplete-list${newIndex}`;
+    }
 
+    // Club
     const clubInput = box.querySelector("input[id^='club']");
     const clubLabel = box.querySelector("label[for^='club']");
-    clubInput.id = `club${newIndex}`;
-    clubInput.name = `club${newIndex}`;
-    clubLabel.setAttribute("for", `club${newIndex}`);
+    const autocompleteClub = box.querySelector("div[id^='autocomplete-club']");
+    const clubWrapper = box.querySelector("div[id^='club-input-wrapper']");
+    if (clubInput) {
+      clubInput.id = `club${newIndex}`;
+      clubInput.name = `club${newIndex}`;
+    }
+    if (clubLabel) {
+      clubLabel.setAttribute("for", `club${newIndex}`);
+    }
+    if (autocompleteClub) {
+      autocompleteClub.id = `autocomplete-club${newIndex}`;
+    }
+    if (clubWrapper) {
+      clubWrapper.id = `club-input-wrapper${newIndex}`;
+    }
+
+    // Gender
+    const gender = box.querySelector("div[id^='gender']");
+    const genderValue = box.querySelector("div[id^='gender'][id$='-value']");
+    if (gender) gender.id = `gender${newIndex}`;
+    if (genderValue) genderValue.id = `gender${newIndex}-value`;
   });
 
-  deleteButtons.forEach((container, index) => {
-    const newIndex = index + 1;
-    container.dataset.index = newIndex;
-  });
+  // Update global count if needed
   nameCount = swimmerBoxes.length;
+
   updateDeleteButtons();
 }
 function updateDeleteButtons() {
@@ -190,38 +228,119 @@ document.querySelectorAll(".form-container").forEach((form) => {
     let course = form.querySelector('input[name="course-type"]:checked');
     let poolLength = form.querySelector("input[name=pool-length]:checked");
     let targetGender = form.querySelector("input[name=gender]:checked");
+    let male = 0;
+    let female = 0;
+
+    let warningBox = document.getElementById("team-warning");
+    warningBox.classList.add("hidden");
     nameCount = form.querySelectorAll(".individual-input").length;
-    if (course != null) {
+    if (course != null && poolLength != null && targetGender != null) {
       let swimmer_list = [];
+      let male = 0;
+      let female = 0;
       for (let i = 1; i <= nameCount; i++) {
         const swimmer = form.querySelector(`#asa-number${i}`).value;
         const gender = form.querySelector(`#gender${i}`).textContent;
+        if (gender == "Open/Male") {
+          male += 1;
+        } else if (gender == "Female") {
+          female += 1;
+        }
         console.log([swimmer, gender]);
+        console.log(female);
         swimmer_list.push([swimmer, gender]);
       }
-      try {
-        let swimmer_list2 = await runPython(
-          swimmer_list,
-          course.value,
-          poolLength.value,
-          targetGender.value
-        );
-        if (swimmer_list2) {
-          tbl_create(swimmer_list2); // Proceed only if there's no error
-        } else {
-          console.error("Failed to create the table due to an error.");
+
+      if (swimmerChecker(male, female, warningBox, targetGender)) {
+        try {
+          let swimmer_list2 = await runPython(
+            swimmer_list,
+            course.value,
+            poolLength.value,
+            targetGender.value
+          );
+          if (swimmer_list2) {
+            console.log("Swimmer List:", swimmer_list2);
+            document.getElementById("table-row-top").innerHTML = "";
+            document.getElementById("table-row-mid").innerHTML = "";
+            document.getElementById("table-row-bottom").innerHTML = "";
+            swimmer_list2.forEach((swimmers, index) => {
+              tbl_create(swimmers, index);
+            });
+          }
+          else {
+            console.error("Failed to create the table due to an error.");
+          }
+        } catch (error) {
+          console.error("error occured:", error);
+        } finally {
+          spinner.style.display = "none";
         }
-      } catch (error) {
-        console.error("error occured:", error);
-      } finally {
+      } else {
         spinner.style.display = "none";
       }
     } else {
-      console.error("No boxes checked");
       spinner.style.display = "none";
+      radioChecker(warningBox, course, poolLength, targetGender);
     }
   });
 });
+
+function swimmerChecker(male, female, warningBox, targetGender) {
+  const genderRules = [
+    { type: "Mixed", required: 2, count: male, label: "males" },
+    { type: "Open/Male", required: 4, count: male, label: "males" },
+    { type: "Mixed", required: 2, count: female, label: "females" },
+    { type: "Female", required: 4, count: female, label: "females" },
+  ];
+
+  const match = genderRules.find(
+    (rule) => targetGender.value === rule.type && rule.count < rule.required
+  );
+
+  if (match) {
+    const diff = match.required - match.count;
+    const label = diff === 1 ? match.label.slice(0, -1) : match.label;
+
+    warningBox.classList.remove("hidden");
+    warningBox.innerHTML = `<div>WARNING: Not enough ${match.label} selected</div
+                            <div>Add ${diff} more ${label} or switch category</div>`;
+    console.log(`Not enough ${match.label} selected`);
+    return false;
+  } else {
+    warningBox.classList.add("hidden");
+    warningBox.innerHTML = "";
+    return true;
+  }
+}
+
+function radioChecker(warningBox, course, poolLength, genderTarget) {
+  const checks = [
+    { value: course, message: "No course type selected" },
+    { value: poolLength, message: "No pool length selected" },
+    { value: genderTarget, message: "No gender selected" },
+  ];
+
+  const missing = checks.find((check) => check.value == null);
+
+  if (missing) {
+    warningBox.classList.remove("hidden");
+    warningBox.innerHTML = `<div>WARNING: ${missing.message}</div>`;
+  }
+}
+
+document
+  .getElementById("clearSwimmerButton-asa")
+  .addEventListener("click", () => {
+    const container = document.getElementById("swimmer-container-ASA");
+    container.innerHTML = ""; // Clear all swimmer boxes
+    for (let i = 0; i < 4; i++) {
+      addSwimmerBox("swimmer-container-ASA"); // Re-add 4 empty boxes
+    }
+    updateDeleteButtons(); // Update delete button visibility
+    const spinner = document.getElementById("spinner");
+    spinner.style.display = "none"; // Hide the spinner if it was visible
+  });
 /*Loading Spinner*/
 async function runPython(swimmer_array, course, poolLength, targetGender) {
   const sentData = {
@@ -246,10 +365,7 @@ async function runPython(swimmer_array, course, poolLength, targetGender) {
     return null;
   }
 }
-function tbl_create(swimmer_list) {
-  if (typeof tbl_wrapper !== "undefined") {
-    tbl_wrapper.remove();
-  }
+function tbl_create(swimmer_list,index) {
   const tbl_section = document.getElementById("results");
   const tbl = document.createElement("table");
   tbl.className = "results-table";
@@ -288,6 +404,13 @@ function tbl_create(swimmer_list) {
   tbl_wrapper.className = "table-container";
   tbl_wrapper.appendChild(tbl);
   tbl_section.appendChild(tbl_wrapper);
+  if (index === 0) {
+    document.getElementById("table-row-top").appendChild(tbl_wrapper);
+  } else if (index === 5) {
+    document.getElementById("table-row-bottom").appendChild(tbl_wrapper);
+  } else {
+    document.getElementById("table-row-mid").appendChild(tbl_wrapper);
+  }
   tbl_wrapper.scrollIntoView({ behavior: "smooth" });
 }
 
@@ -308,31 +431,36 @@ function openSite(evt, siteName) {
   document.getElementById(siteName).style.display = "block";
   evt.currentTarget.className += "active";
 }
-clubSearchInput = document.getElementById("filter-club");
-clubSearchInput.addEventListener("input", async () => {
-  const resultBox = document.getElementById("autocomplete-club");
-  resultBox.classList.add("open-autocomplete");
-  const query = clubSearchInput.value.trim();
-  if (!query) return (resultBox.innerHTML = "");
 
-  const res = await fetch(
-    "http://localhost:5000/search-clubs?q=" + encodeURIComponent(query)
-  );
-  const suggestions = await res.json();
+function clubFilter(wrapper) {
+  const input = wrapper.querySelector("input[type='text']");
+  const resultBox = wrapper.querySelector(".autocomplete-club");
+  input.addEventListener("input", async () => {
+    resultBox.classList.add("open-autocomplete");
+    const query = input.value.trim();
+    if (!query) return (resultBox.innerHTML = "");
 
-  resultBox.innerHTML = "";
-  console.log(suggestions);
-  suggestions.forEach((club) => {
-    const item = document.createElement("div");
-    item.textContent = club.club;
-    item.addEventListener("click", () => {
-      clubSearchInput.value = club.club;
-      resultBox.classList.remove("open-autocomplete");
-      resultBox.innerHTML = "";
+    const res = await fetch(
+      "http://localhost:5000/search-clubs?q=" + encodeURIComponent(query)
+    );
+    const suggestions = await res.json();
+
+    resultBox.innerHTML = "";
+    console.log(suggestions);
+    suggestions.forEach((club) => {
+      const item = document.createElement("div");
+      item.textContent = club.club;
+      item.addEventListener("click", () => {
+        input.value = club.club;
+        resultBox.classList.remove("open-autocomplete");
+        resultBox.innerHTML = "";
+      });
+      resultBox.appendChild(item);
     });
-    resultBox.appendChild(item);
   });
-});
+}
+clubSearchInput = document.getElementById("club-input-wrapper0");
+clubFilter(clubSearchInput);
 
 function setupAutocomplete(searchInput) {
   const idSuffix = searchInput.id.match(/\d+$/)?.[0];
@@ -346,10 +474,12 @@ function setupAutocomplete(searchInput) {
   searchInput.addEventListener("input", async () => {
     resultBox.classList.add("open-autocomplete");
     const query = searchInput.value.trim();
+    const club = clubInput.value.trim();
     if (!query) return (resultBox.innerHTML = "");
 
     const res = await fetch(
-      "http://localhost:5000/search?q=" + encodeURIComponent(query)
+      "http://localhost:5000/search?" +
+        new URLSearchParams({ q: query, club: club })
     );
     const suggestions = await res.json();
 
@@ -381,7 +511,6 @@ document.addEventListener("click", function (event) {
     const input = box.previousElementSibling; // assumes input precedes box
     if (!box.contains(event.target) && !input.contains(event.target)) {
       box.innerHTML = "";
-      box.style.display = "none";
       box.classList.remove("open-autocomplete");
     }
   });

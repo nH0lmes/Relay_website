@@ -13,8 +13,10 @@ import asyncpg
 from typing import Optional
 import datetime
 from itertools import combinations
-
-
+from murtys import murty_top_k_assignments,murty_gender_partitioned_top_k
+import traceback
+import aiohttp
+import asyncio
 
 app = FastAPI()
 app.add_middleware(
@@ -38,13 +40,14 @@ async def run_function(data: InputData):
     try:
         print("Received data:",data.array)
         print("Gender:",data.target_gender)
-        result = your_function(data.array,data.courseType,data.pool_length,data.target_gender)
+        result = await your_function(data.array,data.courseType,data.pool_length,data.target_gender)
         return {"result": result}
     except Exception as e:
         print("Error in processing:", str(e))
+        traceback.print_exc()
         raise HTTPException(status_code=400, detail=str(e))
 
-def your_function(input_array,course,pool_length,target_gender):
+async def your_function(input_array,course,pool_length,target_gender):
     n=1
     def swim_cloud(sc_number):
         event_template  = pd.read_csv("D:/Personal/Real Website V2/Events-template.csv")
@@ -90,52 +93,71 @@ def your_function(input_array,course,pool_length,target_gender):
         merged_df = pd.merge(merged_df,lc_df, on='Event',how = 'outer')
         
         return name,sc_number,merged_df
-    def get_times(asa_number):
-        event_template  = pd.read_csv("Events-template.csv")
+    async def get_times(asa_number,session,event_template):
         url = f'https://www.swimmingresults.org/individualbest/personal_best.php?mode=A&tiref={asa_number}'
-        page = requests.get(url)
-        soup = BeautifulSoup(page.text,'lxml')
+        async with session.get(url) as response:
+            page = await response.text()
+        soup = BeautifulSoup(page,'lxml')
         
         
         def extract_table(table):
             headers = [header.text.strip() for header in table.find_all('th')[:2]]
+            if len(headers) < 2:
+                return pd.DataFrame()  # Return empty DataFrame if no data
             df = pd.DataFrame(columns = headers)
             rows = table.find_all('tr')[1:]
             for row in rows:
                 cols = row.find_all('td')
+                if len(cols) < 2:
+                    continue
                 individual_data = [data.text.strip() for data in cols[:2]]
                 df.loc[len(df)]=individual_data
             
             return df
         
-        lc_table = soup.find_all('table')[0]
-        sc_table = soup.find_all('table')[1]
-        
-        lc_df = extract_table(lc_table)
-        sc_df = extract_table(sc_table)
-        
-        lc_df.columns = ['Event', 'LC Time']
-        sc_df.columns = ['Event', 'SC Time']
+        tables =  soup.find_all('table')[:-1]
+        lc_df = pd.DataFrame(columns = ['Event', 'LC Time'])
+        sc_df = pd.DataFrame(columns = ['Event', 'SC Time'])
+
+        if len(tables) >= 1:
+            first_table = extract_table(tables[0])
+            header = first_table.columns[1]
+            if 'LC' in header:
+                lc_df = first_table
+                lc_df.columns = ['Event', 'LC Time']
+            elif 'SC' in header:
+                sc_df = first_table
+                sc_df.columns = ['Event', 'SC Time']
+        if len(tables) >= 2:
+            second_table = extract_table(tables[1])
+            header = second_table.columns[1]
+            if 'LC' in header:
+                lc_df = second_table
+                lc_df.columns = ['Event', 'LC Time']
+            elif 'SC' in header:
+                sc_df = second_table
+                sc_df.columns = ['Event', 'SC Time']
         
         merged_df = pd.merge(event_template,sc_df, on='Event',how = 'outer')
         merged_df = pd.merge(merged_df,lc_df, on='Event',how = 'outer')
-        
+        #for col in ['SC Time', 'LC Time']:
+            #merged_df[col] = merged_df[col].fillna(math.inf)
         name = soup.find('p',class_ = 'rnk_sj').text.strip().split(' - ')[0]
         return name,asa_number,merged_df
     
-    def matrix_input(asa_num,events):
+    async def matrix_input(asa_num,events, session, event_template):
         if n == 1:
-            name, asa_num, df = get_times(asa_num)
+            name, asa_num, df = await get_times(asa_num,session,event_template)
             print(name)
-            print(asa_num)
+            # print(asa_num)
             print(df)
-            print(".................")
+            # print(".................")
         elif n == 2:
-            name, asa_num, df = swim_cloud(asa_num)
-            print(name)
-            print(asa_num)
-            print(df)
-            print("...............")
+            name, asa_num, df = swim_cloud(asa_num,session)
+            # print(name)
+            # print(asa_num)
+            # print(df)
+            # print("...............")
         else:
             print("Error in choosing website")
 
@@ -151,15 +173,21 @@ def your_function(input_array,course,pool_length,target_gender):
     genders = []
     names= []
     matrix = []
-    def matrix_creator(gender):
-        for number in numbers:
-            if gender != "Mixed" and number[1] != gender:
-                continue
-            num = number[0]
-            name,row = matrix_input(num,medley)
-            names.append((name,number[1]))
-            genders.append(number[1])
-            matrix.append(row)    
+    async def matrix_creator(gender):
+        event_template  = pd.read_csv("Events-template.csv")
+        medley = [(pool_length + ' ' + x) for x in strokes]
+        async with aiohttp.ClientSession() as session:
+            tasks = []
+            for number in numbers:
+                if gender != "Mixed" and number[1] != gender:
+                    continue
+                tasks.append(matrix_input(number[0], medley, session, event_template))
+            results = await asyncio.gather(*tasks)
+        for (name,row), number in zip(results, [num for num in numbers if gender == "Mixed" or num[1] == gender]):
+                names.append((name, number[1]))
+                genders.append(number[1])
+                matrix.append(row)
+    
     print(names)
     print(genders)
     def time_conversion(t):
@@ -186,75 +214,26 @@ def your_function(input_array,course,pool_length,target_gender):
     converted = [[time_conversion(ti)for ti in row] for row in matrix]
     print(converted)
     print(names)
-    def not_mixed(gender):
-        matrix_creator(gender)
+    async def not_mixed(gender):
+        await matrix_creator(gender)
         converted = [[time_conversion(ti)for ti in row] for row in matrix]
-        m = Munkres()
-        indexes = m.compute(converted)
-        print (indexes)
-        output_array =  []
-        total = 0
-        for row, column in indexes:
-            value = converted[row][column]
-            total += value
-            original_value = matrix[row][column]
-            row_name = names[row][0]
-            column_name = strokes[column]
-            output_array.append( [column_name,row_name,original_value])
-        sorted_array = sorted(output_array,key = lambda x:x[0])
-        sorted_array.append(["Total Time:",reverse_conversion(total)])
+        sorted_array = murty_top_k_assignments(converted, names, strokes,k=5,is_for_mixed=False)
         return sorted_array
-    def mixedRelay(gender):
-        matrix_creator(gender)
-        def valid_gender_combo(combo):
-            genders = [gender for name, gender in combo]
-            return genders.count('Open/Male') == 2 and genders.count('Female') == 2
-
-        best_total = float('inf')
-        best_result = None
+    async def mixedRelay(gender):
+        await matrix_creator(gender)
         converted = [[time_conversion(ti)for ti in row] for row in matrix]
-        for combo in combinations(names, 4):
-            if not valid_gender_combo(combo):
-                continue
-
-            combo_names = [name for name, _ in combo]
-            indices = [names.index((name, gender)) for name, gender in combo]
-            
-            submatrix = [converted[i] for i in indices]
-
-            m = Munkres()
-            indexes = m.compute(submatrix)
-            
-            total = sum(submatrix[row][col] for row, col in indexes)
-            if total < best_total:
-                best_total = total
-                best_result = {
-                    'indexes': indexes,
-                    'matrix': submatrix,
-                    'names': combo_names,
-                    'indices': indices
-                }
-        output_array =  []
-        total = 0
-        for row, column in best_result["indexes"]:
-            stroke = strokes[column]
-            time = best_result["matrix"][row][column]
-            total += time
-            original_value = reverse_conversion(time)
-            output_array.append( [stroke,best_result["names"][row],original_value])
-        sorted_array = sorted(output_array,key = lambda x:x[0])
-        sorted_array.append(["Total Time:",reverse_conversion(total)])
-        return(sorted_array)
+        sorted_array = murty_gender_partitioned_top_k(converted, names, strokes, k=5)
+        return sorted_array
     if target_gender == "Mixed":
-        sorted_array = mixedRelay("Mixed")
+        sorted_array = await mixedRelay("Mixed")
     elif target_gender == "Open/Male":
-        sorted_array = not_mixed("Open/Male")
+        sorted_array = await not_mixed("Open/Male")
     elif target_gender == "Female":
-        sorted_array = not_mixed("Female")
+        sorted_array = await not_mixed("Female")
     return(sorted_array)
 
 @app.get("/search")
-async def search_swimmers(q: str = Query( ..., min_length=1)):
+async def search_swimmers(q: str = Query( ..., min_length=1),club: str = Query(None)):
     conn = await asyncpg.connect(
     database = "relay_website",
     user = "postgres",
@@ -262,22 +241,24 @@ async def search_swimmers(q: str = Query( ..., min_length=1)):
     host = "localhost",
     port=5432
     )
+    print(q)
+    print(club)
     query_prefix = f"{q.lower()}%"
     query_loose = f"%{q.lower()}%"
-
     # Tier 1: Prefix match
     rows = await conn.fetch(
         """
         SELECT first_name, last_name, asa_number, club, gender
         FROM swimmers
-        WHERE lower(first_name) LIKE $1
-           OR lower(first_name || ' ' || last_name) LIKE $1
+        WHERE (lower(first_name) LIKE $1
+           OR lower(first_name || ' ' || last_name) LIKE $1)
+           AND ($2::text IS NULL OR lower(club) LIKE lower($2))
         LIMIT 5
         """,
-        query_prefix
+        query_prefix,club if club else None
     )
 
-    # Tier 2: Partial match
+    #Tier 2: Partial match
     if not rows:
         rows = await conn.fetch(
             """
@@ -307,25 +288,80 @@ async def search_swimmers(q: str = Query( ..., min_length=1)):
     return [dict(row) for row in rows]
 
 @app.get("/search-clubs")
-async def search_swimmers(q: str = Query( ..., min_length=1)):
+async def search_clubs(q: str = Query(..., min_length=1)):
     conn = await asyncpg.connect(
-    database = "relay_website",
-    user = "postgres",
-    password = "Holmesy0804!",
-    host = "localhost",
-    port=5432
+        database="relay_website",
+        user="postgres",
+        password="Holmesy0804!",
+        host="localhost",
+        port=5432
     )
-    rows = await conn.fetch(
+
+    query_prefix = f"{q.lower()}%"
+    query_loose = f"%{q.lower()}%"
+
+    seen = set()
+    final_results = []
+
+    # Tier 1: Prefix match
+    tier1 = await conn.fetch(
         """
         SELECT DISTINCT club
         FROM swimmers
-        WHERE lower(club) LIKE '%' || lower($1) || '%'
+        WHERE lower(club) LIKE $1
         LIMIT 5
         """,
-        f"%{q}%"
+        query_prefix
     )
+    for row in tier1:
+        club = row["club"]
+        if club not in seen:
+            seen.add(club)
+            final_results.append(row)
+
+    # Tier 2: Loose/Partial match
+    if len(final_results) < 5:
+        tier2 = await conn.fetch(
+            """
+            SELECT DISTINCT club
+            FROM swimmers
+            WHERE lower(club) LIKE $1
+            LIMIT 5
+            """,
+            query_loose
+        )
+        for row in tier2:
+            club = row["club"]
+            if club not in seen:
+                seen.add(club)
+                final_results.append(row)
+            if len(final_results) >= 5:
+                break
+
+    # Tier 3: Fuzzy match using pg_trgm
+    if len(final_results) < 5:
+        await conn.execute("SET pg_trgm.similarity_threshold = 0.3;")  # adjust as needed
+        tier3 = await conn.fetch(
+            """
+            SELECT DISTINCT club, similarity(lower(club), $1) AS sim
+            FROM swimmers
+            WHERE similarity(lower(club), $1) > 0.5
+            ORDER BY sim DESC
+            LIMIT 10
+            """,
+            q.lower()
+        )
+        for row in tier3:
+            club = row["club"]
+            if club not in seen:
+                seen.add(club)
+                final_results.append(row)
+            if len(final_results) >= 5:
+                break
+
     await conn.close()
-    return [dict(row) for row in rows]
+    return [dict(row) for row in final_results]
+
 
 @app.get("/filter-swimmers")
 async def filter_swimmers(

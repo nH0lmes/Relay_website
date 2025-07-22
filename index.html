@@ -95,9 +95,9 @@
           <div id= "ASA" class="tabcontent" style="display: block;">
             <p>Insert the ASA numbers for each swimmer into the boxes below</p>
             <div class = "filter-bar" id="filter-bar">
-              <div class="club-input-wrapper">
+              <div class="club-input-wrapper" id="club-input-wrapper0">
                 <input type="text" id="filter-club" placeholder="Enter Club Name..."/>
-                <div id="autocomplete-club"></div>
+                <div class="autocomplete-club" id="autocomplete-club0"></div>
               </div>            
               <div class="filter-row">
                 <select id="filter-gender" placeholder>
@@ -141,6 +141,9 @@
                   </div>
                 </div> -->
               </div>
+              <button type="button" class = "btn btn-grey clearSwimmerButton" id="clearSwimmerButton-asa" data-target-container="swimmer-container-ASA">
+                Clear all swimmers
+              </button>
               <button type="button" class="btn btn-grey addSwimmerButton" id="addSwimmerButton-asa" data-target-container="swimmer-container-ASA">
                 Add +
               </button>
@@ -165,6 +168,7 @@
                 <label class="radio-label" for="female-asa">Female</label>
               </div>
               <button class="btn" type="submit">Submit</button>
+              <div id="team-warning" class="team-warning hidden" aria-live="polite"></div>
             </form>
           </div>
           <div id="swimcloud" class="tabcontent">
@@ -247,7 +251,11 @@
     </section>
     <section id="results">
       <div id="spinner" class="spinner"></div>
-      <div class="table-container">
+      <div class="table-rows" id=""table-rows">
+        <div id="table-row-top" class = "table-row"></div>
+        <div id="table-row-mid" class = "table-row"></div>
+        <div id="table-row-bottom" class = "table-row"></div>
+    </div>>
       
     </section>
     <script src="js/main.js"></script>
