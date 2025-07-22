@@ -1,0 +1,120 @@
+/* Table styles */
+.table-container {
+  width: 100%;
+  overflow-x: auto;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+th,
+td {
+  text-align: left;
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+th {
+  background-color: var(--dark-blue);
+  color: white;
+  font-weight: 600;
+}
+
+tbody tr:hover {
+  background-color: #f1f1f1;
+  cursor: pointer;
+}
+
+/* Spinner */
+.spinner {
+  display: none;
+  border: 5px solid #f3f3f3;
+  border-top: 5px solid var(--dark-blue);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 1s linear infinite;
+  margin: 20px auto;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Result display */
+.result-box {
+  background-color: var(--light-grey);
+  border: 1px solid var(--dark-blue);
+  border-radius: 8px;
+  padding: 20px;
+  margin-top: 20px;
+  box-shadow: 0 0 10px rgba(10, 50, 90, 0.2);
+}
+
+.result-highlight {
+  font-weight: bold;
+  color: var(--dark-blue);
+  font-size: 1.1em;
+}
+
+.table-container {
+  width: calc(0.6 * 1500px);
+  margin: 0 auto;
+}
+#table-row-mid {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  gap: 20px;              
+  padding: 10px;
+}
+.table-container {
+  flex: 1 1 auto;                   
+  min-width: 200px;        
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  padding: 10px;
+
+}
+
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 25px 0;
+  font-size: 0.9em;
+  min-width: 400px;
+  border-radius: 10px 10px 0 0;
+  overflow: hidden;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+}
+
+.results-table thead {
+  height: 70px;
+  background-color: var(--dark-blue);
+  color: var(--white);
+  text-align: left;
+  font-weight: bold;
+}
+.results-table th,
+.results-table td {
+  padding: 12px 15px;
+  border-bottom: solid 1px #e0e0e0;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.results-table tbody tr:nth-of-type(odd) {
+  background-color: #f3f3f3;
+}
+
+.results-table tbody tr:last-of-type {
+  border-bottom: 4px solid var(--dark-blue);
+}

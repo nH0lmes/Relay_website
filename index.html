@@ -89,8 +89,8 @@
           <h1>Build your Relay</h1>
           <div class="text_seperator"></div>
           <div class="tab">
-            <button class="tablinks" onclick="openSite(event,'ASA')">ASA number</button>
-            <button class="tablinks" onclick="openSite(event,'swimcloud')">SwimCloud</button>
+            <button class="tablinks" data-tab="ASA">ASA number</button>
+            <button class="tablinks" data-tab="swimcloud">SwimCloud</button>
           </div>
           <div id= "ASA" class="tabcontent" style="display: block;">
             <p>Insert the ASA numbers for each swimmer into the boxes below</p>
@@ -251,13 +251,13 @@
     </section>
     <section id="results">
       <div id="spinner" class="spinner"></div>
-      <div class="table-rows" id=""table-rows">
+      <div class="table-rows" id="table-rows">
         <div id="table-row-top" class = "table-row"></div>
         <div id="table-row-mid" class = "table-row"></div>
         <div id="table-row-bottom" class = "table-row"></div>
     </div>>
       
     </section>
-    <script src="js/main.js"></script>
+    <script type="module" src="js/main.js"></script>
   </body>
 </html>
