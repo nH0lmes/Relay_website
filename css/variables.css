@@ -5,4 +5,11 @@
   --black: #000;
   --light-grey: #dadada;
   --dark-grey: #b1b2b5;
+  --confirm-green: #3cce07;
+  --confirm-green-hover:#2fa205;
+  --delete-red: #f21414;
+  --delete-red-hover: #a51616;
+
+
+
 }

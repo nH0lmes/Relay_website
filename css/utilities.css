@@ -30,9 +30,7 @@
 
 /* Buttons */
 .btn {
-  display: inline-block;
   padding: 13px 20px;
-  background: var(--light-blue);
   font-weight: 600;
   text-decoration: none;
   border: none;
@@ -48,7 +46,6 @@
 
 .btn:hover {
   opacity: 0.8;
-  color: var(--light-grey);
 }
 
 /*Text Classes*/

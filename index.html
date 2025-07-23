@@ -94,20 +94,35 @@
           </div>
           <div id= "ASA" class="tabcontent" style="display: block;">
             <p>Insert the ASA numbers for each swimmer into the boxes below</p>
+            <div class="filter-toggle">
+              <button class="btn" id="toggle-filter-btn">Show Filters</button>
+            </div>
             <div class = "filter-bar" id="filter-bar">
               <div class="club-input-wrapper" id="club-input-wrapper0">
-                <input type="text" id="filter-club" placeholder="Enter Club Name..."/>
+                <input type="text" id="filter-club" class="filter-box" placeholder="Enter Club Name..."/>
                 <div class="autocomplete-club" id="autocomplete-club0"></div>
               </div>            
               <div class="filter-row">
-                <select id="filter-gender" placeholder>
-                  <option value="">All</option>
-                  <option value="Open/Male">Open/Male</option>
-                  <option value="Female">Female</option>
-                </select>
-                <input type="number" id ="filter-age-min" placeholder="Min age">
-                <input type="number" id ="filter-age-max" placeholder="Max age">
-                <button id="apply-filters">Apply</button>
+                <div class="gender-filter" id="gender-filter">
+                  <input type="radio" id="radio-mixed" name="gender-filter" value="" checked>
+                  <label for="radio-mixed">Mixed</label>
+                  <input type="radio" id="radio-male" name="gender-filter" value="Open/Male">
+                  <label for="radio-male">Open/Male</label>
+                  <input type="radio" id="radio-female" name="gender-filter" value="Female">
+                  <label for="radio-female">Female</label>
+                </div>
+                <div class="slider-container">
+                  <input type="number" id="min-age" value="20" min="0" max="100">
+                  <div class="range-slider">
+                    
+                    <input type="range" id="range-min" min="0" max="100" value="20">
+                    <input type="range" id="range-max" min="0" max="100" value="60">
+                    <div class="slider-track" id="slider-track"></div>
+                  </div>
+                  <input type="number" id="max-age" value="100" min="0" max="100">
+                </div>
+                
+                <button id="apply-filters" class="btn filter-box">Apply</button>
               </div>
             </div>
             <form
@@ -141,12 +156,17 @@
                   </div>
                 </div> -->
               </div>
-              <button type="button" class = "btn btn-grey clearSwimmerButton" id="clearSwimmerButton-asa" data-target-container="swimmer-container-ASA">
-                Clear all swimmers
-              </button>
-              <button type="button" class="btn btn-grey addSwimmerButton" id="addSwimmerButton-asa" data-target-container="swimmer-container-ASA">
-                Add +
-              </button>
+              <div class="form-button-container">
+                <button type="button" class="btn addSwimmerButton" id="addSwimmerButton-asa" data-target-container="swimmer-container-ASA">
+                  Add Swimmer
+                  <i class="fa-solid fa-user-plus"></i>   
+                </button>
+                <button type="button" class = "btn clearSwimmerButton" id="clearSwimmerButton-asa" data-target-container="swimmer-container-ASA">
+                  Clear All 
+                  <i class="fa-solid fa-eraser"></i>
+                </button>
+                
+              </div>
               <div class="radio-wrapper" id="pool">
                 <input type="radio" name="course-type" class="short-course" id="short-course-asa" value="short">
                 <label class="radio-label" for="short-course-asa">Short Course</label>

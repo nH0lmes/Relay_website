@@ -1,4 +1,27 @@
 export function tbl_create(swimmer_list,index) {
+  console.log(swimmer_list.length)
+  let tbl_wrapper;
+  if (swimmer_list.length === 5){
+    tbl_wrapper = tbl_generate(swimmer_list, index);
+  }
+  if (index === 0) {
+    document.getElementById("table-row-top").appendChild(tbl_wrapper);
+  } else if (index === 5) {
+    if (tbl_wrapper){
+      document.getElementById("table-row-bottom").appendChild(tbl_wrapper);
+    }
+    else{
+      let message = document.createElement("p");
+      message.textContent = "No swimmers found for this search.";
+      document.getElementById("table-row-bottom").appendChild(message);
+    }
+  } else {
+    document.getElementById("table-row-mid").appendChild(tbl_wrapper);
+  }
+  document.getElementById("table-row-top").scrollIntoView({ behavior: "smooth" });
+}
+
+function tbl_generate(swimmer_list, index) {
   const tbl_section = document.getElementById("results");
   const tbl = document.createElement("table");
   tbl.className = "results-table";
@@ -36,13 +59,5 @@ export function tbl_create(swimmer_list,index) {
   let tbl_wrapper = document.createElement("div");
   tbl_wrapper.className = "table-container";
   tbl_wrapper.appendChild(tbl);
-  tbl_section.appendChild(tbl_wrapper);
-  if (index === 0) {
-    document.getElementById("table-row-top").appendChild(tbl_wrapper);
-  } else if (index === 5) {
-    document.getElementById("table-row-bottom").appendChild(tbl_wrapper);
-  } else {
-    document.getElementById("table-row-mid").appendChild(tbl_wrapper);
-  }
-  tbl_wrapper.scrollIntoView({ behavior: "smooth" });
+  return tbl_wrapper;
 }

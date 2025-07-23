@@ -43,10 +43,18 @@
 }
 
 /* Filter Bar */
+.filter-toggle{
+  width: 60%;
+  justify-self: center;
+}
+#toggle-filter-btn{
+  width: 100%;
+
+}
 .filter-bar {
+  display: block;
   width: 60%;
   margin: 0 auto;
-  display: flex;
   flex-direction: column;
   gap: 10px;
   position: relative;
@@ -59,8 +67,24 @@
   justify-self: left;
 }
 
+.filter-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.filter-box{
+  border-radius:5px ;
+  flex: 1;
+  padding: 8px;
+  min-width: 100px;
+  box-sizing: border-box;
+  text-decoration: none;
+}
+
 .club-input-wrapper {
   position: relative;
+  margin-top: 10px;
   width: 100%;
   box-sizing: border-box;
 }
@@ -95,20 +119,7 @@
   background-color: #f0f0f0;
 }
 
-.filter-row {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-}
 
-.filter-row select,
-.filter-row input,
-.filter-row button {
-  flex: 1;
-  padding: 8px;
-  min-width: 100px;
-  box-sizing: border-box;
-}
 /*Input Section*/
 .input_box1 {
   box-sizing: border-box;
@@ -220,14 +231,6 @@ input[type="text"]:focus {
   outline: none;
 }
 
-#addSwimmerButton {
-  align-self: flex-end;
-  margin-right: 10%;
-}
-
-#addSwimmerButton:hover {
-  opacity: 70%;
-}
 
 .delete-button-container {
   display: flex;
@@ -236,7 +239,7 @@ input[type="text"]:focus {
 }
 
 .fa-trash {
-  color: red;
+  color: var(--delete-red);
   position: absolute;
   top: 0;
   right: 0;
@@ -246,7 +249,7 @@ input[type="text"]:focus {
 }
 
 .fa-trash:hover {
-  color: darkred;
+  color: var(--delete-red-hover);
   transition: 0.5s;
 }
 
@@ -271,7 +274,7 @@ input[type="text"]:focus {
   font-weight: bold height 30px;
   line-height: 30px;
   width: 30px;
-  background-color: red;
+  background-color: var(--delete-red);
   color: #000;
   border-radius: 50%;
   border: none;
@@ -279,9 +282,25 @@ input[type="text"]:focus {
 }
 
 .btn-delete:hover {
-  background-color: darkred;
+  background-color: var(--delete-red-hover);
 }
-wrapper {
+
+.confirm-btn{
+  position: absolute;
+  font-size: 1.4em;
+  bottom: 0; 
+  right: 0;
+  padding: 0 12px 20px 0 ;
+  color: var(--confirm-green);
+  border: none;
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+.confirm-btn:hover {
+  color: var(--confirm-green-hover);
+  transition: 0.3s ease;
+}
+.wrapper {
   width: 100%;
   position: relative;
   display: flex;
@@ -291,10 +310,28 @@ wrapper {
   position: relative;
 }
 
-#addSwimmerButton {
-  align-self: flex-end;
-  margin-right: 10%;
+.form-button-container {
+  display: flex;
+  justify-content: center;
 }
+.addSwimmerButton {
+  background-color:var(--confirm-green);
+  margin-right: 10%;
+  margin: 10px
+}
+
+.addSwimmerButton:hover {
+  background-color: var(--confirm-green-hover);
+}
+
+.clearSwimmerButton{
+  background-color: var(--delete-red);
+  margin:10px
+}
+.clearSwimmerButton:hover{
+  background-color: var(--delete-red-hover);
+}
+
 /* Radio Buttons */
 input[type="radio"] {
   border: 0 !important;
