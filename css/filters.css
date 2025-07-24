@@ -1,3 +1,97 @@
+/* Filter Bar */
+.filter-toggle{
+  width: 60%;
+  justify-self: center;
+}
+#toggle-filter-btn{
+  width: 100%;
+
+}
+#filter-bar {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease, opacity 0.3s ease;
+    width: 60%;
+    margin: 10px auto;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+    background-color: var(--background);
+    border-radius: 20px;
+    padding: 30px;
+}
+#filter-bar.filter-visible{
+    max-height: 500px;
+    opacity: 1;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+#filter-club {
+  width: 100%;
+  margin: 10px 0;
+  padding: 8px;
+  font-size: large;
+  font-family: 'Poppins',sans-serif;
+  justify-self: left;
+  background-color: #ffffff;
+}
+
+.filter-row {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  border-bottom:1px var(--dark-grey) solid;
+  padding: 10px;
+}
+.filter-row-club{
+    border-radius: 20px 20px 0 0;
+}
+.filter-box{
+    border-radius:5px ;
+    flex: 1;
+    padding: 8px;
+    min-width: 100px;
+    box-sizing: border-box;
+    text-decoration: none;
+}
+
+.club-input-wrapper {
+  position: relative;
+  height: fit-content;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.autocomplete-items,
+.autocomplete-club {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  background: white;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.autocomplete-items:empty {
+  box-shadow: none;
+  display: none;
+}
+
+.autocomplete-items,
+.autocomplete-club div {
+  padding: 8px;
+  cursor: pointer;
+  transition: 0.2s;
+  text-align: left;
+}
+
+.autocomplete-items div:hover,
+.autocomplete-items div.active,
+.autocomplete-club div:hover,
+.autocomplete-club div.active {
+  background-color: #f0f0f0;
+}
+
 .gender-filter{
     display: flex;
     border: 1px solid var(--dark-blue);
@@ -12,6 +106,7 @@
 .gender-filter label{
     padding: 10px 20px;
     cursor: pointer;
+    font-weight: 400;
     border-right: 1px solid var(--dark-blue);
     background-color: white;
     color: black;
@@ -28,7 +123,7 @@
           /* Age range slider */
 
 .slider-container{
-    background-color: var(--light-grey);
+
     width: 100%;
     padding: 20px;
     border-radius: 10px;
@@ -42,7 +137,7 @@ input[type="number"] {
     text-align: center;
     padding: 8px;
     border-radius: 10px;
-    border: none;
+    border: 1px #333 solid;
     background: white;
     font-size: 16px;
     font-weight: bold;
@@ -73,25 +168,35 @@ input[type=range]::-webkit-slider-thumb {
     border-radius: 50%;
     border-color: black;
     border: black 2px solid ;
-    background: purple;
+    background: var(--dark-blue);
     margin-top: -7px;
     cursor: pointer;
     position: relative;
+
     z-index: 2;
 }
 
 input[type=range]::-webkit-slider-runnable-track {
     height: 6px;
-    background: #d0b9f9;
+    background: var(--pale-blue);
     border-radius: 3px;
 }
 
 .slider-track {
     position: absolute;
     height: 6px;
-    background: purple;
+    background: var(--dark-blue);
     top: 50%;
     transform: translateY(-50%);
     z-index: 1;
     border-radius: 3px;
+}
+.age-box::-webkit-inner-spin-button{
+    appearance: none;
+}
+#apply-filters{
+    margin: 10px;
+    border-radius: 50px;
+    border: #333 solid 1px;
+    padding: 14px;
 }

@@ -3,9 +3,9 @@ export function initiateFilterToggle(){
   const filterBar = document.getElementById('filter-bar')
 
   toggleBtn.addEventListener('click',() =>{
-    const isVisible = filterBar.style.display ==='flex';
-    filterBar.style.display = isVisible ? 'none' : 'flex';
-    toggleBtn.textContent = isVisible ? 'Show Filters' : 'Hide Filters';
+    filterBar.classList.toggle('filter-visible');
+    const isVisible = filterBar.classList.contains('filter-visible');
+    toggleBtn.textContent = isVisible ?  "Hide Filters \u25B2":"Show Filters \u25BC";
   });
 }
 
