@@ -1,9 +1,8 @@
 /* Table styles */
-.table-container {
-  width: 100%;
-  overflow-x: auto;
-}
 
+.table-rows{
+  display: none;
+}
 table {
   border-collapse: collapse;
   width: 100%;
@@ -64,24 +63,48 @@ tbody tr:hover {
   color: var(--dark-blue);
   font-size: 1.1em;
 }
+.table-title{
+  width: 60%;
+  align-items: center;
+  text-align: center ;
+}
+#table-row-top{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
-.table-container {
-  width: calc(0.6 * 1500px);
-  margin: 0 auto;
 }
 #table-row-mid {
   display: flex;
-  flex-wrap: nowrap;
+  flex-direction: row;
+  flex-wrap: wrap;
   justify-content: center;
   gap: 20px;              
   padding: 10px;
 }
+.mid-tables-wrapper{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
 .table-container {
+  width: calc(0.6 * 1500px);
+  overflow-x: auto;
+  margin: 0 auto;
   flex: 1 1 auto;                   
   min-width: 200px;        
   box-sizing: border-box;
-  border: 1px solid #ccc;
+
   padding: 10px;
+
+}
+#table-row-mid .table-container{
+  max-width: fit-content;
+}
+#table-row-bottom{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
 }
 
@@ -91,9 +114,9 @@ tbody tr:hover {
   margin: 25px 0;
   font-size: 0.9em;
   min-width: 400px;
-  border-radius: 10px 10px 0 0;
+  border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2)
 }
 
 .results-table thead {
@@ -102,19 +125,28 @@ tbody tr:hover {
   color: var(--white);
   text-align: left;
   font-weight: bold;
+  font-size: large;
 }
 .results-table th,
 .results-table td {
   padding: 12px 15px;
-  border-bottom: solid 1px #e0e0e0;
+  border-top: solid 1px #e0e0e0;
   border-collapse: collapse;
   text-align: left;
 }
 
-.results-table tbody tr:nth-of-type(odd) {
-  background-color: #f3f3f3;
+.results-table tr:last-of-type {
+  background-color: var(--background);
+  font-size: large;
 }
 
-.results-table tbody tr:last-of-type {
-  border-bottom: 4px solid var(--dark-blue);
+.table-name{
+  cursor: pointer;
+  transition: 0.3s ease;
 }
+
+.table-name:hover{
+  color: var(--light-blue);
+  transition: 0.3s ease;
+}
+

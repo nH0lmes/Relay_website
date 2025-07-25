@@ -17,7 +17,18 @@ export function initiateSliderFunction(){
     const sliderTrack = document.getElementById("slider-track");
     const sliderMaxVal=100
     
-
+    // maxRange.addEventListener("focus",function (){
+    //     this.select();
+    // });
+    // minRange.addEventListener("focus",function (){
+    //     this.select();
+    // });
+    // maxRange.addEventListener("click",function (){
+    //     this.select();
+    // });
+    // minRange.addEventListener("click",function (){
+    //     this.select();
+    // });
     minRange.addEventListener("input", () =>
         syncFromSliders(minRange, maxRange, minInput, maxInput, sliderTrack, sliderMaxVal)
         );

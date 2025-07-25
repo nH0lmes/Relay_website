@@ -1,14 +1,24 @@
 export function tbl_create(swimmer_list,index) {
-  console.log(swimmer_list.length)
+  const tableRows = document.getElementById("table-rows");
+  tableRows.style.display = "block";
   let tbl_wrapper;
+  let mid_wrapper;
   if (swimmer_list.length === 5){
     tbl_wrapper = tbl_generate(swimmer_list, index);
   }
   if (index === 0) {
-    document.getElementById("table-row-top").appendChild(tbl_wrapper);
+    const topTable = document.getElementById("table-row-top");
+    const title = document.createElement("h3");
+    title.textContent = "Fastest Team";
+    title.classList.add("table-title");
+    topTable.append(title,tbl_wrapper);
   } else if (index === 5) {
     if (tbl_wrapper){
-      document.getElementById("table-row-bottom").appendChild(tbl_wrapper);
+      const bottomTable = document.getElementById("table-row-bottom");
+      const title = document.createElement("h3");
+      title.textContent = "B Team - Contains no swimmers from the fastest team";
+      title.classList.add("table-title")
+      bottomTable.append(title,tbl_wrapper);
     }
     else{
       let message = document.createElement("p");
@@ -16,10 +26,35 @@ export function tbl_create(swimmer_list,index) {
       document.getElementById("table-row-bottom").appendChild(message);
     }
   } else {
-    document.getElementById("table-row-mid").appendChild(tbl_wrapper);
+    
+    if (index === 1){
+      const midTable = document.getElementById("table-row-mid")
+      const title = document.createElement("h3");
+      title.textContent = "Other options";
+      title.classList.add("table-title")
+      midTable.append(title);
+    }
+    const mid_wrapper = ensureMidWrapper();
+    mid_wrapper.append(tbl_wrapper)
   }
   document.getElementById("table-row-top").scrollIntoView({ behavior: "smooth" });
 }
+function ensureMidWrapper() {
+  let midWrapper = document.getElementById("mid-tables-wrapper");
+  if (!midWrapper) {
+    midWrapper = document.createElement("div");
+    midWrapper.id = "mid-tables-wrapper";
+    midWrapper.classList.add("mid-tables-wrapper"); // Optional styling class
+    const midRow = document.getElementById("table-row-mid");
+    if (midRow) {
+      midRow.appendChild(midWrapper);
+    } else {
+      console.warn("Could not find #table-row-mid to append mid-tables-wrapper.");
+    }
+  }
+  return midWrapper;
+}
+
 
 function tbl_generate(swimmer_list, index) {
   const tbl_section = document.getElementById("results");
@@ -38,9 +73,13 @@ function tbl_generate(swimmer_list, index) {
   /*Add table contents*/
   for (let n = 0; n < swimmer_list.length - 1; n++) {
     const tr = document.createElement("tr");
-    swimmer_list[n].forEach((text) => {
+    swimmer_list[n].forEach((text, index) => {
       const td = document.createElement("td");
       td.textContent = text;
+      if (index === 1){
+        td.classList.add("table-name");
+        attachScroll(td,text);
+      }
       tr.appendChild(td);
     });
     tbl.appendChild(tr);
@@ -60,4 +99,28 @@ function tbl_generate(swimmer_list, index) {
   tbl_wrapper.className = "table-container";
   tbl_wrapper.appendChild(tbl);
   return tbl_wrapper;
+}
+
+function attachScroll(cell,name){
+  cell.addEventListener("click", () =>{
+  const nameToFind = name.toLowerCase();
+  console.log(nameToFind);
+  const match = Array.from(document.querySelectorAll(".individual-input"))
+  .find(wrapper =>{
+    const summary = wrapper.querySelector(".collapsed-summary");
+    const firstDiv = summary?.children?.[0];
+    return firstDiv && firstDiv.textContent.toLowerCase().includes(nameToFind);
+  }
+  )
+  if (match) {
+    console.log(match)
+    match.scrollIntoView({behavior:"smooth", block:"center"});
+    setTimeout(()=>match.classList.add("input-pulse"),500);
+    setTimeout(() => match.classList.remove("input-pulse"),2500);
+  }
+  else{
+    console.log("no match found")
+  }
+  });
+
 }

@@ -75,7 +75,7 @@ export function addSwimmerBox(containerId) {
 
   const deleteButton = document.createElement("i");
   deleteButton.className = "delete-button fa-solid fa-trash";
-
+  deleteButton.title = "Delete"
   deleteButton.addEventListener("click", function () {
     wrapper.remove();
     reindexSwimmerBoxes(containerId);
@@ -84,6 +84,7 @@ export function addSwimmerBox(containerId) {
   const confirmButton = document.createElement("i");
   confirmButton.classList = "confirm-btn fa-regular fa-square-check";
   confirmButton.style.display = "none";
+  confirmButton.title = "Confirm"
   confirmButton.addEventListener("click", function () {
     collapseSwimmerBoxes(wrapper);
     confirmButton.style.display = "none";
@@ -121,6 +122,7 @@ export function collapseSwimmerBoxes(wrapper) {
 
   const editBtn = document.createElement("i");
   editBtn.className = "fa-solid fa-pen-to-square edit-button";
+  editBtn.title = "Edit"
 
   editBtn.addEventListener("click", () => {
     summary.remove();
@@ -258,6 +260,9 @@ export function submitButton(){
               document.getElementById("table-row-top").innerHTML = "";
               document.getElementById("table-row-mid").innerHTML = "";
               document.getElementById("table-row-bottom").innerHTML = "";
+              const separator = document.createElement("div");
+              separator.classList.add("text_seperator");
+              document.getElementById("Input").append(separator);
               swimmer_list2.forEach((swimmers, index) => {
                 tbl_create(swimmers, index);
               });
