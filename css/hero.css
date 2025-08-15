@@ -38,7 +38,14 @@
   z-index: 2;
   border-radius: 0 0 10px 0;
 }
-
+.hero-btn {
+  background-color: var(--light-blue);
+}
+.hero-button-box {
+  display: flex;
+  justify-content: center;
+  padding: 10px;
+}
 .hero .hero-text {
   width: 70%;
   margin-bottom: 20px;

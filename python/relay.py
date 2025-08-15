@@ -2,7 +2,7 @@ from bs4 import BeautifulSoup
 import requests
 import pandas as pd
 import math
-from murtys import murty_top_k_assignments,murty_gender_partitioned_top_k
+from python.murtys import murty_top_k_assignments,murty_gender_partitioned_top_k
 import aiohttp
 import asyncio
 n=1

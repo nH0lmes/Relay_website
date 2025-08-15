@@ -24,11 +24,11 @@
     <nav class="navbar">
       <div class="container">
         <div class="logo">
-          <a href="index.html">
-            <img src="images/icon.jpg" alt="logo" width="50px" height="50px" />
-          </a>
+          <a href="index.html" id ="logo">
+            <img src="images/icon.jpg"  alt="logo" width="50px" height="50px" />
+          <h1 class="main-title">Medley Master</h1></a>
+          
         </div>
-
         <div class="main-menu">
           <ul>
             <li>
@@ -40,9 +40,9 @@
             <li>
               <a href="#Input">Calculate</a>
             </li>
-            <li>
+            <!-- <li>
               <a class="btn" href="#"> <i class="fas fa-user"></i>Log In </a>
-            </li>
+            </li> -->
           </ul>
         </div>
       </div>
@@ -56,10 +56,10 @@
         />
       </div>
       <div class="hero-content">
-        <h1 class="hero-heading text-xxl">Medley Master</h1>
-        <p>Rocket your team to success with our innovative medley relay building tool</p>
-        <div class="hero-button">
-          <a href="#Input" class="btn">Go!</a>
+        <h1 class="hero-heading text-xxl">Smarter Relays, Faster Results</h1>
+        <p>Take the guesswork out of relay strategy. Our tool helps you build the most competitive lineup based on real performance data.</p>
+        <div class="hero-button-box">
+          <a href="#Input" class="btn hero-btn">Go!</a>
         </div>
       </div>
     </section>
@@ -88,15 +88,16 @@
         <div class="box">
           <h1>Build your Relay</h1>
           <div class="text_seperator"></div>
-          <div class="tab">
+          <!-- <div class="tab">
             <button class="tablinks" data-tab="ASA">ASA number</button>
             <button class="tablinks" data-tab="swimcloud">SwimCloud</button>
-          </div>
+          </div> -->
           <div id= "ASA" class="tabcontent" style="display: block;">
-            <p>Insert the ASA numbers for each swimmer into the boxes below</p>
+            <p class="filter-text">Use the filters to bulk import swimmers...</p>
             <div class="filter-toggle">
               <button class="btn" id="toggle-filter-btn">Show Filters  &#x25BC</button>
             </div>
+            
             <div class = "filter-bar" id="filter-bar">
               <div class="filter-row filter-row-club">
                 <h3>Club</h3>
@@ -133,6 +134,7 @@
               <button id="apply-filters" class="btn filter-box text-md">Apply Filters</button>
             
             </div>
+            <p class="filter-text">...or manually add individual swimmers via the input boxes.</p>
             <form
               action="/submit"
               method="post"
@@ -175,6 +177,7 @@
                 </button>
                 
               </div>
+              <p class="select-text">Select relay type</p>
               <div class="radio-wrapper" id="pool">
                 <input type="radio" name="course-type" class="short-course" id="short-course-asa" value="short">
                 <label class="radio-label" for="short-course-asa">Short Course</label>
@@ -195,7 +198,7 @@
                 <input type="radio" name="gender" class="Female" id="female-asa" value="Female">
                 <label class="radio-label" for="female-asa">Female</label>
               </div>
-              <button class="btn" type="submit">Submit</button>
+              <button class="btn submit-btn" type="submit">Submit</button>
               <div id="team-warning" class="team-warning hidden" aria-live="polite"></div>
             </form>
           </div>

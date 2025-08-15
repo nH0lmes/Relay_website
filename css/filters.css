@@ -1,37 +1,37 @@
 /* Filter Bar */
-.filter-toggle{
+.filter-toggle {
   width: 60%;
   justify-self: center;
 }
-#toggle-filter-btn{
+#toggle-filter-btn {
   width: 100%;
-
 }
 #filter-bar {
-    max-height: 0;
-    opacity: 0;
-    overflow: hidden;
-    transition: max-height 0.4s ease, opacity 0.3s ease;
-    width: 60%;
-    margin: 10px auto;
-    flex-direction: column;
-    gap: 10px;
-    position: relative;
-    background-color: var(--background);
-    border-radius: 20px;
-    padding: 30px;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.4s ease, opacity 0.3s ease;
+  width: 60%;
+  margin: 10px auto;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+  background-color: var(--background);
+  border-radius: 20px;
+  padding: 0px;
 }
-#filter-bar.filter-visible{
-    max-height: 500px;
-    opacity: 1;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+#filter-bar.filter-visible {
+  max-height: 500px;
+  opacity: 1;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  padding: 15px;
 }
 #filter-club {
   width: 100%;
   margin: 10px 0;
   padding: 8px;
   font-size: large;
-  font-family: 'Poppins',sans-serif;
+  font-family: "Poppins", sans-serif;
   justify-self: left;
   background-color: #ffffff;
 }
@@ -40,19 +40,19 @@
   display: flex;
   gap: 10px;
   flex-wrap: wrap;
-  border-bottom:1px var(--dark-grey) solid;
+  border-bottom: 1px var(--dark-grey) solid;
   padding: 10px;
 }
-.filter-row-club{
-    border-radius: 20px 20px 0 0;
+.filter-row-club {
+  border-radius: 20px 20px 0 0;
 }
-.filter-box{
-    border-radius:5px ;
-    flex: 1;
-    padding: 8px;
-    min-width: 100px;
-    box-sizing: border-box;
-    text-decoration: none;
+.filter-box {
+  border-radius: 5px;
+  flex: 1;
+  padding: 8px;
+  min-width: 100px;
+  box-sizing: border-box;
+  text-decoration: none;
 }
 
 .club-input-wrapper {
@@ -92,111 +92,119 @@
   background-color: #f0f0f0;
 }
 
-.gender-filter{
-    display: flex;
-    border: 1px solid var(--dark-blue);
-    border-radius: 10px;
-    overflow: hidden;
-    width: 100%;
+.gender-filter {
+  display: flex;
+  border: 1px solid var(--dark-blue);
+  border-radius: 10px;
+  overflow: hidden;
+  width: 100%;
 }
 
-.gender-filter input[type="radio"]{
-    display: none;
+.gender-filter input[type="radio"] {
+  display: none;
 }
-.gender-filter label{
-    padding: 10px 20px;
-    cursor: pointer;
-    font-weight: 400;
-    border-right: 1px solid var(--dark-blue);
-    background-color: white;
-    color: black;
-    transition: background-color 0.2s, color 0.2s;
+.gender-filter label {
+  padding: 10px 20px;
+  cursor: pointer;
+  font-weight: 400;
+  border-right: 1px solid var(--dark-blue);
+  background-color: white;
+  color: black;
+  transition: background-color 0.2s, color 0.2s;
 }
-.gender-filter label:last-child{
-    border-right: none;
+.gender-filter label:last-child {
+  border-right: none;
 }
 .gender-filter input[type="radio"]:checked + label {
-    background-color: var(--light-blue);
-    color: white;
+  background-color: var(--light-blue);
+  color: white;
 }
 
-          /* Age range slider */
+/* Age range slider */
 
-.slider-container{
-
-    width: 100%;
-    padding: 20px;
-    border-radius: 10px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
+.slider-container {
+  width: 100%;
+  padding: 20px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 input[type="number"] {
-    width: 60px;
-    text-align: center;
-    padding: 8px;
-    border-radius: 10px;
-    border: 1px #333 solid;
-    background: white;
-    font-size: 16px;
-    font-weight: bold;
-    color: #333;
+  width: 60px;
+  text-align: center;
+  padding: 8px;
+  border-radius: 10px;
+  border: 1px #333 solid;
+  background: white;
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
 }
 .range-slider {
-    position: relative;
-    width: 80%;
-    height: 30px;
+  position: relative;
+  width: 80%;
+  height: 30px;
 }
 
-.range-slider input[type=range] {
-    position: absolute;
-    left: 0;
-    width: 100%;
-    pointer-events: none;
-    appearance: none;
-    -webkit-appearance: none;
-    background: transparent;
-    height: 30px;
+.range-slider input[type="range"] {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  pointer-events: none;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  height: 30px;
 }
 
-input[type=range]::-webkit-slider-thumb {
-    pointer-events: auto;
-    -webkit-appearance: none;
-    height: 20px;
-    width: 20px;
-    border-radius: 50%;
-    border-color: black;
-    border: black 2px solid ;
-    background: var(--dark-blue);
-    margin-top: -7px;
-    cursor: pointer;
-    position: relative;
+input[type="range"]::-webkit-slider-thumb {
+  pointer-events: auto;
+  -webkit-appearance: none;
+  height: 20px;
+  width: 20px;
+  border-radius: 50%;
+  border-color: black;
+  border: black 2px solid;
+  background: var(--dark-blue);
+  margin-top: -7px;
+  cursor: pointer;
+  position: relative;
 
-    z-index: 2;
+  z-index: 2;
 }
 
-input[type=range]::-webkit-slider-runnable-track {
-    height: 6px;
-    background: var(--pale-blue);
-    border-radius: 3px;
+input[type="range"]::-webkit-slider-runnable-track {
+  height: 6px;
+  background: var(--pale-blue);
+  border-radius: 3px;
 }
 
 .slider-track {
-    position: absolute;
-    height: 6px;
-    background: var(--dark-blue);
-    top: 50%;
-    transform: translateY(-50%);
-    z-index: 1;
-    border-radius: 3px;
+  position: absolute;
+  height: 6px;
+  background: var(--dark-blue);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 1;
+  border-radius: 3px;
 }
-.age-box::-webkit-inner-spin-button{
-    appearance: none;
+.age-box::-webkit-inner-spin-button {
+  appearance: none;
 }
-#apply-filters{
-    margin: 10px;
-    border-radius: 50px;
-    border: #333 solid 1px;
-    padding: 14px;
+#apply-filters {
+  margin: 10px;
+  border-radius: 50px;
+  border: #333 solid 1px;
+  padding: 14px;
+}
+#apply-filters:hover {
+  background-color: var(--light-grey);
+  color: #333;
+  opacity: 100%;
+}
+
+.filter-text {
+  margin: 10px 0 20px 0;
 }

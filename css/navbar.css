@@ -40,3 +40,17 @@
   opacity: 0.7;
   color: var(--white);
 }
+
+.navbar .logo {
+  display: flex;
+  justify-content: center;
+}
+#logo {
+  display: flex;
+  align-items: center;
+}
+.main-title {
+  display: flex;
+  text-align: center;
+  padding: 0 20px;
+}

@@ -4,8 +4,8 @@ from pydantic import BaseModel
 from typing import Optional
 import traceback
 
-from relay import your_function
-from sql_search import fetch_clubs, fetch_swimmers, fetch_filtered_swimmers
+from python.relay import your_function
+from python.sql_search import fetch_clubs, fetch_swimmers, fetch_filtered_swimmers
 
 app = FastAPI()
 app.add_middleware(

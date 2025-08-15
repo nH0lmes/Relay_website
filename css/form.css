@@ -42,9 +42,6 @@
   text-align: center;
 }
 
-
-
-
 /*Input Section*/
 .input_box1 {
   box-sizing: border-box;
@@ -156,7 +153,6 @@ input[type="text"]:focus {
   outline: none;
 }
 
-
 .delete-button-container {
   display: flex;
   align-items: center;
@@ -210,12 +206,12 @@ input[type="text"]:focus {
   background-color: var(--delete-red-hover);
 }
 
-.confirm-btn{
+.confirm-btn {
   position: absolute;
   font-size: 1.4em;
-  bottom: 0; 
+  bottom: 0;
   right: 0;
-  padding: 0 12px 20px 0 ;
+  padding: 0 12px 20px 0;
   color: var(--confirm-green);
   border: none;
   cursor: pointer;
@@ -240,20 +236,20 @@ input[type="text"]:focus {
   justify-content: center;
 }
 .addSwimmerButton {
-  background-color:var(--confirm-green);
+  background-color: var(--confirm-green);
   margin-right: 10%;
-  margin: 10px
+  margin: 10px;
 }
 
 .addSwimmerButton:hover {
   background-color: var(--confirm-green-hover);
 }
 
-.clearSwimmerButton{
+.clearSwimmerButton {
   background-color: var(--delete-red);
-  margin:10px
+  margin: 10px;
 }
-.clearSwimmerButton:hover{
+.clearSwimmerButton:hover {
   background-color: var(--delete-red-hover);
 }
 
@@ -325,16 +321,31 @@ input[type="radio"]:hover + label::before {
   display: none;
 }
 
-@keyframes input-pulse{
-0%, 50%, 100% {
-  box-shadow: 0 0 0px rgba( 30, 153, 235, 0.4);
-}
+@keyframes input-pulse {
+  0%,
+  50%,
+  100% {
+    box-shadow: 0 0 0px rgba(30, 153, 235, 0.4);
+  }
 
-25%, 75% {
-  box-shadow: 0 0 30px rgba( 30, 153, 235, 0.8);
+  25%,
+  75% {
+    box-shadow: 0 0 30px rgba(30, 153, 235, 0.8);
+  }
 }
-
-}
-.input-pulse{
+.input-pulse {
   animation: input-pulse 2s ease-out forwards;
+}
+
+.select-text {
+  margin: 10px;
+}
+
+.submit-btn {
+  margin: 10px;
+  background-color: var(--light-blue);
+}
+.submit-btn:hover {
+  opacity: 70%;
+  color: #333;
 }
