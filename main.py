@@ -3,9 +3,12 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from typing import Optional
 import traceback
-
+from contextlib import asynccontextmanager
+import asyncpg
+import os
 from python.relay import your_function
 from python.sql_search import fetch_clubs, fetch_swimmers, fetch_filtered_swimmers
+from dotenv import load_dotenv
 
 app = FastAPI()
 app.add_middleware(
@@ -15,6 +18,24 @@ app.add_middleware(
     allow_methods=['*'], 
     allow_headers=['*'], 
 )
+load_dotenv()
+DATABASE_URL = os.getenv("DATABASE_URL")
+pool: asyncpg.Pool | None = None
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    global pool
+    # Startup: create connection pool
+    pool = await asyncpg.create_pool(DATABASE_URL, ssl="require" if "neon.tech" in DATABASE_URL else None)
+    print("✅ Database pool created")
+
+    yield  # <-- app runs here
+
+    # Shutdown: close pool
+    await pool.close()
+    print("🛑 Database pool closed")
+
+app = FastAPI(lifespan=lifespan)
 
 class InputData(BaseModel):
     array: list[list[str]]
