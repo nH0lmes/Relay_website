@@ -1,7 +1,7 @@
 import asyncpg
 from typing import Optional
 import datetime
-from db import pool
+from python.db import pool
 
 async def fetch_swimmers(q: str,club: str)-> list[dict]:
     query_prefix = f"{q.lower()}%"
