@@ -9,9 +9,10 @@ import os
 from python.relay import your_function
 from python.sql_search import fetch_clubs, fetch_swimmers, fetch_filtered_swimmers
 from dotenv import load_dotenv
+from python.db import pool
 
-
-
+load_dotenv()
+DATABASE_URL = os.getenv("DATABASE_URL")
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global pool
@@ -33,9 +34,7 @@ app.add_middleware(
     allow_methods=['*'], 
     allow_headers=['*'], 
 )
-load_dotenv()
-DATABASE_URL = os.getenv("DATABASE_URL")
-pool: asyncpg.Pool | None = None
+
 
 class InputData(BaseModel):
     array: list[list[str]]
