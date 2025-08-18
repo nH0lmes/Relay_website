@@ -10,17 +10,7 @@ from python.relay import your_function
 from python.sql_search import fetch_clubs, fetch_swimmers, fetch_filtered_swimmers
 from dotenv import load_dotenv
 
-app = FastAPI()
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=['*'],  
-    allow_credentials=True,
-    allow_methods=['*'], 
-    allow_headers=['*'], 
-)
-load_dotenv()
-DATABASE_URL = os.getenv("DATABASE_URL")
-pool: asyncpg.Pool | None = None
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -36,6 +26,16 @@ async def lifespan(app: FastAPI):
     print("🛑 Database pool closed")
 
 app = FastAPI(lifespan=lifespan)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=['*'],  
+    allow_credentials=True,
+    allow_methods=['*'], 
+    allow_headers=['*'], 
+)
+load_dotenv()
+DATABASE_URL = os.getenv("DATABASE_URL")
+pool: asyncpg.Pool | None = None
 
 class InputData(BaseModel):
     array: list[list[str]]
