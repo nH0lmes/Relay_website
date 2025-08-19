@@ -1,11 +1,12 @@
 import asyncpg
 from typing import Optional
 import datetime
-from python.db import pool
+from python.db import get_pool
 
 async def fetch_swimmers(q: str,club: str)-> list[dict]:
     query_prefix = f"{q.lower()}%"
     query_loose = f"%{q.lower()}%"
+    pool = await get_pool()
     # Tier 1: Prefix match
     async with pool.acquire() as conn:
         rows = await conn.fetch(
@@ -52,7 +53,7 @@ async def fetch_swimmers(q: str,club: str)-> list[dict]:
 async def fetch_clubs(q: str)-> list[dict]:
     query_prefix = f"{q.lower()}%"
     query_loose = f"%{q.lower()}%"
-
+    pool = await get_pool()
     seen = set()
     final_results = []
 
@@ -134,6 +135,7 @@ async def fetch_filtered_swimmers(
           AND ($4::int IS NULL OR yob <= $4)
         LIMIT 100
     """
+    pool = await get_pool()
     async with pool.acquire() as conn:
         rows = await conn.fetch(query, f"%{club}%", gender, min_year, max_year)
     swimmers = [dict(row) for row in rows]

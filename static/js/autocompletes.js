@@ -1,16 +1,16 @@
 import { collapseSwimmerBoxes } from "./form.js";
-
+import { API_BASE } from "./config.js";
 export function initiateAutocompletes() {
-    document.querySelectorAll(".search-input").forEach(setupAutocomplete);
-    document.addEventListener("click", function (event) {
+  document.querySelectorAll(".search-input").forEach(setupAutocomplete);
+  document.addEventListener("click", function (event) {
     document.querySelectorAll(".open-autocomplete").forEach((box) => {
-        const input = box.previousElementSibling; // assumes input precedes box
-        if (!box.contains(event.target) && !input.contains(event.target)) {
+      const input = box.previousElementSibling; // assumes input precedes box
+      if (!box.contains(event.target) && !input.contains(event.target)) {
         box.innerHTML = "";
         box.classList.remove("open-autocomplete");
-        }
+      }
     });
-    });
+  });
 }
 export function clubFilter(wrapper) {
   const input = wrapper.querySelector("input[type='text']");
@@ -21,7 +21,7 @@ export function clubFilter(wrapper) {
     if (!query) return (resultBox.innerHTML = "");
 
     const res = await fetch(
-      "http://localhost:5000/search-clubs?q=" + encodeURIComponent(query)
+      `${API_BASE}/search-clubs?q=` + encodeURIComponent(query)
     );
     const suggestions = await res.json();
 
@@ -56,8 +56,7 @@ export function setupAutocomplete(searchInput) {
     if (!query) return (resultBox.innerHTML = "");
 
     const res = await fetch(
-      "http://localhost:5000/search?" +
-        new URLSearchParams({ q: query, club: club })
+      `${API_BASE}/search?` + new URLSearchParams({ q: query, club: club })
     );
     const suggestions = await res.json();
 

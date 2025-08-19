@@ -1,5 +1,7 @@
 from fastapi import FastAPI, HTTPException,Query
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 from typing import Optional
 import traceback
@@ -9,23 +11,12 @@ import os
 from python.relay import your_function
 from python.sql_search import fetch_clubs, fetch_swimmers, fetch_filtered_swimmers
 from dotenv import load_dotenv
-from python.db import pool
+from python.db import init_pool, close_pool
 
-load_dotenv()
-DATABASE_URL = os.getenv("DATABASE_URL")
-@asynccontextmanager
 async def lifespan(app: FastAPI):
-    global pool
-    # Startup: create connection pool
-    pool = await asyncpg.create_pool(DATABASE_URL, ssl="require" if "neon.tech" in DATABASE_URL else None)
-    print("✅ Database pool created")
-
-    yield  # <-- app runs here
-
-    # Shutdown: close pool
-    await pool.close()
-    print("🛑 Database pool closed")
-
+    await init_pool()
+    yield
+    await close_pool()
 app = FastAPI(lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
@@ -34,7 +25,11 @@ app.add_middleware(
     allow_methods=['*'], 
     allow_headers=['*'], 
 )
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
+@app.get("/")
+async def read_index():
+    return FileResponse("index.html")
 
 class InputData(BaseModel):
     array: list[list[str]]
@@ -72,6 +67,7 @@ async def filter_swimmers(
     max_age: Optional[int] = None
 ):
    return await fetch_filtered_swimmers(club,gender,min_age,max_age)
+
 
 if __name__ == "__main__":
     import uvicorn

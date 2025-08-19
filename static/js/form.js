@@ -1,6 +1,7 @@
-import { setupAutocomplete,clubFilter } from "./autocompletes.js";
+import { setupAutocomplete, clubFilter } from "./autocompletes.js";
 import { runPython } from "./pythonCaller.js";
 import { tbl_create } from "./table.js";
+import { API_BASE } from "./config.js";
 export function addSwimmerBox(containerId) {
   let container = document.getElementById(containerId);
   let nameCount = container.querySelectorAll(".individual-input").length + 1;
@@ -75,7 +76,7 @@ export function addSwimmerBox(containerId) {
 
   const deleteButton = document.createElement("i");
   deleteButton.className = "delete-button fa-solid fa-trash";
-  deleteButton.title = "Delete"
+  deleteButton.title = "Delete";
   deleteButton.addEventListener("click", function () {
     wrapper.remove();
     reindexSwimmerBoxes(containerId);
@@ -84,14 +85,21 @@ export function addSwimmerBox(containerId) {
   const confirmButton = document.createElement("i");
   confirmButton.classList = "confirm-btn fa-regular fa-square-check";
   confirmButton.style.display = "none";
-  confirmButton.title = "Confirm"
+  confirmButton.title = "Confirm";
   confirmButton.addEventListener("click", function () {
     collapseSwimmerBoxes(wrapper);
     confirmButton.style.display = "none";
   });
 
-
-  wrapper.append(header, name, club, asa_num, deleteButton, gender, confirmButton);
+  wrapper.append(
+    header,
+    name,
+    club,
+    asa_num,
+    deleteButton,
+    gender,
+    confirmButton
+  );
 
   container.appendChild(wrapper);
   setupAutocomplete(input_name);
@@ -122,7 +130,7 @@ export function collapseSwimmerBoxes(wrapper) {
 
   const editBtn = document.createElement("i");
   editBtn.className = "fa-solid fa-pen-to-square edit-button";
-  editBtn.title = "Edit"
+  editBtn.title = "Edit";
 
   editBtn.addEventListener("click", () => {
     summary.remove();
@@ -213,7 +221,7 @@ export function updateDeleteButtons() {
   }
 }
 
-export function submitButton(){
+export function submitButton() {
   document.querySelectorAll(".form-container").forEach((form) => {
     form.addEventListener("submit", async function (event) {
       event.preventDefault();
@@ -266,8 +274,7 @@ export function submitButton(){
               swimmer_list2.forEach((swimmers, index) => {
                 tbl_create(swimmers, index);
               });
-            }
-            else {
+            } else {
               console.error("Failed to create the table due to an error.");
             }
           } catch (error) {
@@ -329,59 +336,66 @@ function radioChecker(warningBox, course, poolLength, genderTarget) {
 }
 
 export function initiateClearSwimmers() {
-    document
+  document
     .getElementById("clearSwimmerButton-asa")
     .addEventListener("click", () => {
       const confirmClear = window.confirm(
-        "Are you sure you want to clear all swimmers? This action cannot be undone.");
-        if (!confirmClear) {
-            return;
-        }
-  
-        const container = document.getElementById("swimmer-container-ASA");
-        container.innerHTML = ""; // Clear all swimmer boxes
-        for (let i = 0; i < 4; i++) {
+        "Are you sure you want to clear all swimmers? This action cannot be undone."
+      );
+      if (!confirmClear) {
+        return;
+      }
+
+      const container = document.getElementById("swimmer-container-ASA");
+      container.innerHTML = ""; // Clear all swimmer boxes
+      for (let i = 0; i < 4; i++) {
         addSwimmerBox("swimmer-container-ASA"); // Re-add 4 empty boxes
-        }
-        updateDeleteButtons(); // Update delete button visibility
-        const spinner = document.getElementById("spinner");
-        spinner.style.display = "none"; // Hide the spinner if it was visible
+      }
+      updateDeleteButtons(); // Update delete button visibility
+      const spinner = document.getElementById("spinner");
+      spinner.style.display = "none"; // Hide the spinner if it was visible
     });
 }
 
-export function initiateFilterButton(){
-  document.getElementById("apply-filters").addEventListener("click", async () => {
-    const club = document.getElementById("filter-club").value.trim();
-    const gender = document.querySelector('input[name = "gender-filter"]:checked').value.trim()
-    const minAge = document.getElementById("range-min").value || 0;
-    const maxAge = document.getElementById("range-max").value || 100;
+export function initiateFilterButton() {
+  document
+    .getElementById("apply-filters")
+    .addEventListener("click", async () => {
+      const club = document.getElementById("filter-club").value.trim();
+      const gender = document
+        .querySelector('input[name = "gender-filter"]:checked')
+        .value.trim();
+      const minAge = document.getElementById("range-min").value || 0;
+      const maxAge = document.getElementById("range-max").value || 100;
 
-    const params = new URLSearchParams({
+      const params = new URLSearchParams({
         club,
         gender,
         min_age: minAge,
         max_age: maxAge,
-    });
-    console.log(params.toString());
-    const res = await fetch(
-        `http://localhost:5000/filter-swimmers?${params.toString()}`
-    );
-    const swimmers = await res.json();
+      });
+      console.log(params.toString());
+      const res = await fetch(
+        `${API_BASE}/filter-swimmers?${params.toString()}`
+      );
+      const swimmers = await res.json();
 
-    const existingBoxes = document.querySelectorAll(".individual-input");
-    const container = document.getElementById("swimmer-container-ASA");
-    container.innerHTML = "";
-    swimmers.forEach(async (swimmer, index) => {
+      const existingBoxes = document.querySelectorAll(".individual-input");
+      const container = document.getElementById("swimmer-container-ASA");
+      container.innerHTML = "";
+      swimmers.forEach(async (swimmer, index) => {
         let wrapper;
         const num = index + 1;
         wrapper = addSwimmerBox("swimmer-container-ASA");
         const nameInput = wrapper.querySelector("input[id^='name']");
         const asaInput = wrapper.querySelector("input[id^='asa-number']");
         const clubInput = wrapper.querySelector("input[id^='club']");
-        const genderInput = wrapper.querySelector(`div[id='gender${num}-value']`);
+        const genderInput = wrapper.querySelector(
+          `div[id='gender${num}-value']`
+        );
 
         if (nameInput)
-        nameInput.value = `${swimmer.first_name} ${swimmer.last_name}`;
+          nameInput.value = `${swimmer.first_name} ${swimmer.last_name}`;
         if (asaInput) asaInput.value = swimmer.asa_number;
         if (clubInput) clubInput.value = swimmer.club;
         if (genderInput) genderInput.textContent = swimmer.gender;
@@ -389,36 +403,33 @@ export function initiateFilterButton(){
         collapseSwimmerBoxes(wrapper);
 
         await setupAutocomplete(wrapper);
-    });
-    let new_boxes = document.querySelectorAll(".individual-input");
-    new_boxes[new_boxes.length - 1].scrollIntoView({ behavior: "smooth" });
-    while (new_boxes.length < 4) {
+      });
+      let new_boxes = document.querySelectorAll(".individual-input");
+      new_boxes[new_boxes.length - 1].scrollIntoView({ behavior: "smooth" });
+      while (new_boxes.length < 4) {
         wrapper = addSwimmerBox("swimmer-container-ASA");
         new_boxes = document.querySelectorAll(".individual-input");
-    }
-  });
+      }
+    });
 }
 
-export function initiateAddSwimmers(){
-    document.querySelectorAll(".addSwimmerButton").forEach(function (button) {
+export function initiateAddSwimmers() {
+  document.querySelectorAll(".addSwimmerButton").forEach(function (button) {
     button.addEventListener("click", function () {
-        const containerId = button.dataset.targetContainer;
-        let container = document.getElementById(containerId);
-        addSwimmerBox(containerId);
-        setTimeout(() => {
-          const inputs = container.querySelectorAll(".individual-input");
-          const lastInput = inputs[inputs.length - 1];
-          if (lastInput) {
-            lastInput.scrollIntoView({ behavior: "smooth", block: "center" });
-          }
-        }, 0);
-
+      const containerId = button.dataset.targetContainer;
+      let container = document.getElementById(containerId);
+      addSwimmerBox(containerId);
+      setTimeout(() => {
+        const inputs = container.querySelectorAll(".individual-input");
+        const lastInput = inputs[inputs.length - 1];
+        if (lastInput) {
+          lastInput.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      }, 0);
     });
-    });
-    const containerId = "swimmer-container-ASA";
-    for (let i = 0; i < 4; i++) {
-        addSwimmerBox(containerId);
-    }
+  });
+  const containerId = "swimmer-container-ASA";
+  for (let i = 0; i < 4; i++) {
+    addSwimmerBox(containerId);
+  }
 }
-
-
