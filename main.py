@@ -30,7 +30,9 @@ app.mount("/static", StaticFiles(directory="static"), name="static")
 @app.get("/")
 async def read_index():
     return FileResponse("index.html")
-
+@app.get("/health")
+async def health_check():
+    return {"status": "ok"}
 class InputData(BaseModel):
     array: list[list[str]]
     courseType: str
