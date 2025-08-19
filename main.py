@@ -38,6 +38,9 @@ class InputData(BaseModel):
     courseType: str
     pool_length: str
     target_gender: str
+@app.get("/test")
+async def test_file():
+    return FileResponse("static/js/config.js")
 
 @app.post("/run-function/")
 async def run_function(data: InputData):
