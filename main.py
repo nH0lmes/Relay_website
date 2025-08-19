@@ -9,15 +9,16 @@ from contextlib import asynccontextmanager
 import asyncpg
 import os
 from python.relay import your_function
-from python.sql_search import fetch_clubs, fetch_swimmers, fetch_filtered_swimmers
-from dotenv import load_dotenv
-from python.db import init_pool, close_pool
+# from python.sql_search import fetch_clubs, fetch_swimmers, fetch_filtered_swimmers
+# from dotenv import load_dotenv
+# from python.db import init_pool, close_pool
 
-async def lifespan(app: FastAPI):
-    await init_pool()
-    yield
-    await close_pool()
-app = FastAPI(lifespan=lifespan)
+# async def lifespan(app: FastAPI):
+#     await init_pool()
+#     yield
+#     await close_pool()
+# app = FastAPI(lifespan=lifespan)
+app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=['*'],  
@@ -41,7 +42,9 @@ class InputData(BaseModel):
 @app.get("/test")
 async def test_file():
     return FileResponse("static/js/config.js")
-
+@app.get("/ping")
+async def ping():
+    return {"message": "pong"}
 @app.post("/run-function/")
 async def run_function(data: InputData):
     try:
@@ -56,22 +59,22 @@ async def run_function(data: InputData):
 
 
 
-@app.get("/search")
-async def search_swimmers(q: str = Query( ..., min_length=1),club: str = Query(None)):
-    return await fetch_swimmers(q, club)
+# @app.get("/search")
+# async def search_swimmers(q: str = Query( ..., min_length=1),club: str = Query(None)):
+#     return await fetch_swimmers(q, club)
 
-@app.get("/search-clubs")
-async def search_clubs(q: str = Query(..., min_length=1)):
-    return await fetch_clubs(q)
+# @app.get("/search-clubs")
+# async def search_clubs(q: str = Query(..., min_length=1)):
+#     return await fetch_clubs(q)
 
-@app.get("/filter-swimmers")
-async def filter_swimmers(
-    club: Optional[str] = None,
-    gender: Optional[str] = None,
-    min_age: Optional[int] = None,
-    max_age: Optional[int] = None
-):
-   return await fetch_filtered_swimmers(club,gender,min_age,max_age)
+# @app.get("/filter-swimmers")
+# async def filter_swimmers(
+#     club: Optional[str] = None,
+#     gender: Optional[str] = None,
+#     min_age: Optional[int] = None,
+#     max_age: Optional[int] = None
+# ):
+#    return await fetch_filtered_swimmers(club,gender,min_age,max_age)
 
 
 if __name__ == "__main__":
