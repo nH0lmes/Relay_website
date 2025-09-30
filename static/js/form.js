@@ -14,10 +14,11 @@ export function addSwimmerBox(containerId) {
 
   const asa_num = document.createElement("div");
   asa_num.className = "form-input";
+  asa_num.style.display = "none";
 
-  const label_asa = document.createElement("label");
-  label_asa.setAttribute("for", `asa-number${nameCount}`);
-  label_asa.textContent = "ASA number";
+  // const label_asa = document.createElement("label");
+  // label_asa.setAttribute("for", `asa-number${nameCount}`);
+  // label_asa.textContent = "ASA number";
 
   const input_asa = document.createElement("input");
   input_asa.type = "text";
@@ -26,7 +27,11 @@ export function addSwimmerBox(containerId) {
   input_asa.id = `asa-number${nameCount}`;
   input_asa.name = `asa-number${nameCount}`;
 
-  asa_num.append(label_asa);
+  input_asa.style.opacity = "0";
+  input_asa.style.pointerEvents = "none";
+  input_asa.style.position = "absolute";
+  input_asa.style.left = "-9999px";
+  // asa_num.append(label_asa);
   asa_num.append(input_asa);
 
   const name = document.createElement("div");
@@ -64,10 +69,10 @@ export function addSwimmerBox(containerId) {
 
   const input_club = document.createElement("input");
   input_club.type = "text";
-  input_club.placeholder = "Enter Club";
+  input_club.placeholder = "Pre-filter by Club";
   input_club.id = `club${nameCount}`;
   input_club.name = `club${nameCount}`;
-
+  
   const autocomplete_club = document.createElement("div");
   autocomplete_club.id = `autocomplete-club${nameCount}`;
   autocomplete_club.className = "autocomplete-club";
@@ -90,7 +95,15 @@ export function addSwimmerBox(containerId) {
     collapseSwimmerBoxes(wrapper);
     confirmButton.style.display = "none";
   });
-
+  input_club.addEventListener("input",()=>{
+    input_name.value="";
+    gender.style.display="none";
+    confirmButton.style.display="none";
+    });
+  input_name.addEventListener("input",()=>{
+    gender.style.display="none";
+    confirmButton.style.display="none";
+    });
   wrapper.append(
     header,
     name,
@@ -100,6 +113,14 @@ export function addSwimmerBox(containerId) {
     gender,
     confirmButton
   );
+  document.addEventListener("click", (e) => {
+  const isClubInput = e.target === input_club;
+  const isAutocomplete = autocomplete_club.contains(e.target);
+
+  if (!isClubInput && !isAutocomplete) {
+    autocomplete_club.innerHTML = ""; // Clear dropdown
+  }
+});
 
   container.appendChild(wrapper);
   setupAutocomplete(input_name);
@@ -112,6 +133,8 @@ export function collapseSwimmerBoxes(wrapper) {
   const name = wrapper.querySelector("input[name^='name']").value.trim();
   const asa = wrapper.querySelector("input[name^='asa-number']").value.trim();
   const club = wrapper.querySelector("input[name^='club']").value.trim();
+  const gender = wrapper.querySelector("div[id^='gender']");
+  gender.style.display = "block";
   const confirmButton = wrapper.querySelector(".confirm-btn");
   wrapper
     .querySelectorAll(".form-input")
@@ -268,8 +291,18 @@ export function submitButton() {
               document.getElementById("table-row-top").innerHTML = "";
               document.getElementById("table-row-mid").innerHTML = "";
               document.getElementById("table-row-bottom").innerHTML = "";
+              let existingSeparator = document.getElementById("form-table-separator");
+              if (existingSeparator) {
+                console.log("Removing existing separator");
+                existingSeparator.remove();
+              }
+              else{
+                console.log("No existing separator found");
+                console.log(existingSeparator);
+              }
               const separator = document.createElement("div");
               separator.classList.add("text_seperator");
+              separator.id = "form-table-separator";
               document.getElementById("Input").append(separator);
               swimmer_list2.forEach((swimmers, index) => {
                 tbl_create(swimmers, index);

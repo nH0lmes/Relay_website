@@ -12,10 +12,17 @@ export function initiateAutocompletes() {
     });
   });
 }
+function debounce(func, delay) {
+  let timeout;
+  return function (...args) {
+    clearTimeout(timeout);
+    timeout = setTimeout(() => func.apply(this, args), delay);
+  };
+}
 export function clubFilter(wrapper) {
   const input = wrapper.querySelector("input[type='text']");
   const resultBox = wrapper.querySelector(".autocomplete-club");
-  input.addEventListener("input", async () => {
+  input.addEventListener("input", debounce(async() => {
     resultBox.classList.add("open-autocomplete");
     const query = input.value.trim();
     if (!query) return (resultBox.innerHTML = "");
@@ -37,7 +44,7 @@ export function clubFilter(wrapper) {
       });
       resultBox.appendChild(item);
     });
-  });
+  }, 100));
 }
 
 export function setupAutocomplete(searchInput) {
@@ -49,7 +56,7 @@ export function setupAutocomplete(searchInput) {
   const clubInput = document.getElementById(`club${idSuffix}`);
   const genderInput = document.getElementById(`gender${idSuffix}-value`);
 
-  searchInput.addEventListener("input", async () => {
+  searchInput.addEventListener("input", debounce(async () => {
     resultBox.classList.add("open-autocomplete");
     const query = searchInput.value.trim();
     const club = clubInput.value.trim();
@@ -80,5 +87,5 @@ export function setupAutocomplete(searchInput) {
     } else {
       resultBox.style.display = "block";
     }
-  });
+  },100));
 }

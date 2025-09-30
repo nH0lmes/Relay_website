@@ -84,12 +84,15 @@
   transition: 0.2s;
   text-align: left;
 }
-
+.autocomplete-club div:nth-child(even),
+.autocomplete-items div:nth-child(even) {
+  background-color: #f2f2f2; /* light grey */
+}
 .autocomplete-items div:hover,
 .autocomplete-items div.active,
 .autocomplete-club div:hover,
 .autocomplete-club div.active {
-  background-color: #f0f0f0;
+  background-color: #e1e1e1;
 }
 
 .gender-filter {
@@ -180,6 +183,7 @@ input[type="range"]::-webkit-slider-runnable-track {
   background: var(--pale-blue);
   border-radius: 3px;
 }
+
 
 .slider-track {
   position: absolute;
