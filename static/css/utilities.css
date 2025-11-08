@@ -39,6 +39,22 @@
   transition: 0.5s;
 }
 
+@media (max-width: 768px) {
+  .btn {
+    padding: 5px 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+  .container {
+    width: 100%;
+    padding: 5px;
+  }
+  .box {
+    width: 100%;
+    padding: 5px;
+  }
+}
+
 .btn-grey {
   background: var(--dark-grey);
   color: black;
@@ -47,4 +63,3 @@
 .btn:hover {
   opacity: 0.8;
 }
-

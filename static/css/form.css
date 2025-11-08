@@ -8,6 +8,16 @@
   object-fit: cover;
   border-radius: 10px;
 }
+
+@media (max-width: 768px) {
+  .about_text {
+    padding: 5px;
+  }
+  .about_box2 {
+    width: 100%;
+    padding: 5px;
+  }
+}
 /* Tabs */
 .tab {
   overflow: hidden;
@@ -343,9 +353,46 @@ input[type="radio"]:hover + label::before {
 
 .submit-btn {
   margin: 10px;
+  color: white;
   background-color: var(--light-blue);
 }
 .submit-btn:hover {
   opacity: 70%;
   color: #333;
+}
+
+@media (max-width: 768px) {
+  .individual-input {
+    padding: 10px;
+    margin: 10px auto;
+    width: 180px;
+  }
+  .individual-input input[type="text"] {
+    font-size: small;
+    margin: 0px 10px 0px 2px;
+  }
+  .autocomplete-items {
+    font-size: small;
+    padding: 0px;
+  }
+  .form-input {
+    margin-bottom: 5px;
+  }
+  .collapsed-summary {
+    font-size: small;
+  }
+  .gender-display {
+    font-size: small;
+  }
+  .confirm-btn {
+    font-size: 1.5rem;
+    padding: 0 8px 8px 0;
+  }
+  .radio-label {
+    font-size: small;
+    margin-right: 10px;
+  }
+  .team-warning {
+    font-size: small;
+  }
 }

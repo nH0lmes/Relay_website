@@ -53,6 +53,7 @@ export function addSwimmerBox(containerId) {
   autocomplete.className = "autocomplete-items";
 
   const gender = document.createElement("div");
+  gender.classList.add("gender-display");
   gender.id = `gender${nameCount}`;
   const genderValue = document.createElement("div");
   genderValue.id = `gender${nameCount}-value`;
@@ -72,7 +73,7 @@ export function addSwimmerBox(containerId) {
   input_club.placeholder = "Pre-filter by Club";
   input_club.id = `club${nameCount}`;
   input_club.name = `club${nameCount}`;
-  
+
   const autocomplete_club = document.createElement("div");
   autocomplete_club.id = `autocomplete-club${nameCount}`;
   autocomplete_club.className = "autocomplete-club";
@@ -95,15 +96,15 @@ export function addSwimmerBox(containerId) {
     collapseSwimmerBoxes(wrapper);
     confirmButton.style.display = "none";
   });
-  input_club.addEventListener("input",()=>{
-    input_name.value="";
-    gender.style.display="none";
-    confirmButton.style.display="none";
-    });
-  input_name.addEventListener("input",()=>{
-    gender.style.display="none";
-    confirmButton.style.display="none";
-    });
+  input_club.addEventListener("input", () => {
+    input_name.value = "";
+    gender.style.display = "none";
+    confirmButton.style.display = "none";
+  });
+  input_name.addEventListener("input", () => {
+    gender.style.display = "none";
+    confirmButton.style.display = "none";
+  });
   wrapper.append(
     header,
     name,
@@ -114,13 +115,13 @@ export function addSwimmerBox(containerId) {
     confirmButton
   );
   document.addEventListener("click", (e) => {
-  const isClubInput = e.target === input_club;
-  const isAutocomplete = autocomplete_club.contains(e.target);
+    const isClubInput = e.target === input_club;
+    const isAutocomplete = autocomplete_club.contains(e.target);
 
-  if (!isClubInput && !isAutocomplete) {
-    autocomplete_club.innerHTML = ""; // Clear dropdown
-  }
-});
+    if (!isClubInput && !isAutocomplete) {
+      autocomplete_club.innerHTML = ""; // Clear dropdown
+    }
+  });
 
   container.appendChild(wrapper);
   setupAutocomplete(input_name);
@@ -291,12 +292,13 @@ export function submitButton() {
               document.getElementById("table-row-top").innerHTML = "";
               document.getElementById("table-row-mid").innerHTML = "";
               document.getElementById("table-row-bottom").innerHTML = "";
-              let existingSeparator = document.getElementById("form-table-separator");
+              let existingSeparator = document.getElementById(
+                "form-table-separator"
+              );
               if (existingSeparator) {
                 console.log("Removing existing separator");
                 existingSeparator.remove();
-              }
-              else{
+              } else {
                 console.log("No existing separator found");
                 console.log(existingSeparator);
               }

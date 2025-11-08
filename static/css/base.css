@@ -68,3 +68,50 @@ img {
 .text-center {
   text-align: center;
 }
+
+@media (max-width: 768px) {
+  .text-xxl {
+    font-size: 1rem;
+  }
+
+  .text-xl {
+    font-size: 1.5rem;
+  }
+
+  .text-lg {
+    font-size: 1.2rem;
+  }
+
+  .text-md {
+    font-size: 0.9rem;
+  }
+
+  .text-sm {
+    font-size: 0.6rem;
+  }
+}
+
+h1 {
+  font-size: 2.5rem;
+  font-weight: 700;
+}
+p {
+  font-size: 1rem;
+}
+@media (max-width: 768px) {
+  h1 {
+    font-size: 1.5rem;
+    font-weight: 600;
+  }
+  h2 {
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
+  h3 {
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+  p {
+    font-size: 0.7rem;
+  }
+}

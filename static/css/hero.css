@@ -1,13 +1,12 @@
 /* Hero */
 .hero {
-  width: 95%;
+  width: 100%;
   max-width: 1500px;
   position: relative;
   display: flex;
   justify-content: center;
   margin: 0 auto;
   align-items: center;
-  background-color: #000072;
 }
 
 .hero .container {
@@ -37,6 +36,18 @@
   text-align: center;
   z-index: 2;
   border-radius: 0 0 10px 0;
+}
+@media (max-width: 768px) {
+  .hero .hero-content {
+    max-width: 60%;
+    padding: 5px;
+  }
+  .hero h1 {
+    padding: 10px;
+  }
+  .hero-button-box {
+    padding: 5px;
+  }
 }
 .hero-btn {
   background-color: var(--light-blue);

@@ -485,16 +485,15 @@ input[type="radio"]:hover + label::before {
   display: flex;
   flex-wrap: nowrap;
   justify-content: center;
-  gap: 20px;              
+  gap: 20px;
   padding: 10px;
 }
 .table-container {
-  flex: 1 1 auto;                   
-  min-width: 200px;        
+  flex: 1 1 auto;
+  min-width: 200px;
   box-sizing: border-box;
   border: 1px solid #ccc;
   padding: 10px;
-
 }
 
 .results-table {

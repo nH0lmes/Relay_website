@@ -27,12 +27,17 @@
           <a href="index.html" id ="logo">
             <img src="static/images/icon.jpg"  alt="logo" width="50px" height="50px" />
           <h1 class="main-title">Medley Master</h1></a>
-          
         </div>
+
+        <button class="menu-toggle" aria-label="Toggle dropdown">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </button>
         <div class="main-menu">
           <ul>
             <li>
-              <a href="index.html">Home</a>
+              <a href="#">Home</a>
             </li>
             <li>
               <a href="#about-us">About</a>
@@ -40,9 +45,6 @@
             <li>
               <a href="#Input">Calculate</a>
             </li>
-            <!-- <li>
-              <a class="btn" href="#"> <i class="fas fa-user"></i>Log In </a>
-            </li> -->
           </ul>
         </div>
       </div>
@@ -56,7 +58,7 @@
         />
       </div>
       <div class="hero-content">
-        <h1 class="hero-heading text-xxl">Smarter Relays, Faster Results</h1>
+        <h2 class="hero-heading">Smarter Relays, Faster Results</h2>
         <p>Take the guesswork out of relay strategy. Our tool helps you build the most competitive lineup based on real performance data.</p>
         <div class="hero-button-box">
           <a href="#Input" class="btn hero-btn">Go!</a>
@@ -66,7 +68,7 @@
     <section class="about_us" id="about-us">
       <div class="container_double">
         <div class="box about_text">
-          <h1>About the Tool</h1>
+          <h2>About the Tool</h2>
           <div class="text_seperator"></div>
           <p>
             Welcome to the Medley Master relay optimiser, a unique tool designed to help your swim team find the fastest medley relay.
@@ -86,7 +88,7 @@
     <section class="Input" id="Input">
       <div class="container">
         <div class="box">
-          <h1>Build your Relay</h1>
+          <h2>Build your Relay</h2>
           <div class="text_seperator"></div>
           <!-- <div class="tab">
             <button class="tablinks" data-tab="ASA">ASA number</button>
@@ -131,7 +133,7 @@
                   <input type="number" class="age-box" id="max-age" value="100" min="0" max="100">
                 </div>
               </div>
-              <button id="apply-filters" class="btn filter-box text-md">Apply Filters</button>
+              <button id="apply-filters" class="btn filter-box">Apply Filters</button>
             
             </div>
             <p class="filter-text">...or manually add individual swimmers via the input boxes.</p>
@@ -177,7 +179,7 @@
                 </button>
                 
               </div>
-              <p class="select-text">Select relay type</p>
+              <h3 class="select-text">Select relay type</h3>
               <div class="radio-wrapper" id="pool">
                 <input type="radio" name="course-type" class="short-course" id="short-course-asa" value="short">
                 <label class="radio-label" for="short-course-asa">Short Course</label>
