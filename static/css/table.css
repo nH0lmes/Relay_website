@@ -14,7 +14,6 @@ td {
   padding: 12px;
   border-bottom: 1px solid #ddd;
 }
-
 th {
   background-color: var(--dark-blue);
   color: white;
@@ -141,7 +140,7 @@ tbody tr:hover {
 @media (max-width: 768px) {
   .table-container {
     max-width: 60%;
-    padding: 10px 5px ;
+    padding: 10px 5px;
   }
   .results-table {
     font-size: 0.8em;
@@ -155,14 +154,15 @@ tbody tr:hover {
   }
   .results-table th,
   .results-table td {
-    padding:  2px;
+    padding: 2px;
     border-top: solid 1px #e0e0e0;
     border-collapse: collapse;
     text-align: left;
     font-size: smaller;
   }
   .results-table tr:last-of-type {
-  font-size: medium;
+    font-size: medium;
+  }
 }
 .table-name {
   cursor: pointer;
