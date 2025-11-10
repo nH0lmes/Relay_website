@@ -82,6 +82,9 @@
 }
 
 @media (max-width: 768px) {
+  .navbar {
+    padding: 5px 20px;
+  }
   .navbar .main-menu ul {
     flex-direction: column;
     background-color: var(--light-blue);
