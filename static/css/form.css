@@ -12,11 +12,12 @@
 @media (max-width: 768px) {
   .about_text {
     padding: 5px;
+    width: 100%;
   }
   .about_box2 {
-    width: 100%;
-    padding: 5px;
+    display: none;
   }
+  
 }
 /* Tabs */
 .tab {
